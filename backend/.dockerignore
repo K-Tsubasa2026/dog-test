@@ -1,0 +1,10 @@
+target/
+.gradle/
+build/
+.idea/
+*.iml
+.vscode/
+.git/
+.env
+.env.*
+HELP.md
