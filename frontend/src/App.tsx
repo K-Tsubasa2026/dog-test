@@ -2,10 +2,14 @@ import { useEffect, useState } from 'react'
 import { fetchQuestions } from './api/questions'
 import { postDiagnosis } from './api/diagnoses'
 import DiagnosisResult from './components/DiagnosisResult'
+import TopScreen from './screens/TopScreen'
 import type { QuestionResponse } from './types/question'
 import type { AnswerRequest, DiagnosisResponse } from './types/diagnosis'
 
+type Screen = 'top' | 'question' | 'loading' | 'result'
+
 function App() {
+  const [screen, setScreen] = useState<Screen>('top')
   const [questions, setQuestions] = useState<QuestionResponse[]>([])
   const [error, setError] = useState<string | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -18,58 +22,83 @@ function App() {
       .catch((err: Error) => setError(err.message))
   }, [])
 
-  const isFinished = questions.length > 0 && currentIndex >= questions.length
+  const handleStart = () => {
+    setScreen('question')
+  }
 
-  useEffect(() => {
-    if (!isFinished) return
-    postDiagnosis({ answers })
-      .then(setResult)
-      .catch((err: Error) => setError(err.message))
-    // 全問回答が完了した瞬間に一度だけ送信すればよいため、依存はisFinishedのみとする
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFinished])
+  const handleAnswer = (questionId: number, choiceId: number) => {
+    const nextAnswers = [...answers, { questionId, choiceId }]
+    setAnswers(nextAnswers)
+
+    if (currentIndex + 1 >= questions.length) {
+      setScreen('loading')
+      postDiagnosis({ answers: nextAnswers })
+        .then((res) => {
+          setResult(res)
+          setScreen('result')
+        })
+        .catch((err: Error) => setError(err.message))
+    } else {
+      setCurrentIndex((index) => index + 1)
+    }
+  }
+
+  const handleRestart = () => {
+    setScreen('top')
+    setCurrentIndex(0)
+    setAnswers([])
+    setResult(null)
+  }
 
   if (error) {
     return <p>エラー: {error}</p>
   }
 
-  if (questions.length === 0) {
-    return <p>読み込み中...</p>
+  if (screen === 'top') {
+    return (
+      <TopScreen onStart={handleStart} disabled={questions.length === 0} />
+    )
   }
 
-  const handleAnswer = (questionId: number, choiceId: number) => {
-    setAnswers((prev) => [...prev, { questionId, choiceId }])
-    setCurrentIndex((index) => index + 1)
-  }
-
-  if (isFinished) {
-    if (!result) {
-      return <p>診断中...</p>
-    }
-    return <DiagnosisResult result={result} />
-  }
-
-  const currentQuestion = questions[currentIndex]
-
-  return (
-    <div>
-      <p>
-        {currentIndex + 1} / {questions.length}
-      </p>
-      <h2>{currentQuestion.content}</h2>
+  if (screen === 'question') {
+    const currentQuestion = questions[currentIndex]
+    return (
       <div>
-        {currentQuestion.choices.map((choice) => (
-          <button
-            key={choice.id}
-            type="button"
-            onClick={() => handleAnswer(currentQuestion.id, choice.id)}
-          >
-            {choice.content}
-          </button>
-        ))}
+        <p>
+          {currentIndex + 1} / {questions.length}
+        </p>
+        <h2>{currentQuestion.content}</h2>
+        <div>
+          {currentQuestion.choices.map((choice) => (
+            <button
+              key={choice.id}
+              type="button"
+              onClick={() => handleAnswer(currentQuestion.id, choice.id)}
+            >
+              {choice.content}
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  if (screen === 'loading') {
+    return <p>診断中...</p>
+  }
+
+  if (result) {
+    return (
+      <div>
+        <DiagnosisResult result={result} />
+        <button type="button" onClick={handleRestart}>
+          もう一度診断する
+        </button>
+      </div>
+    )
+  }
+
+  return null
 }
 
 export default App
