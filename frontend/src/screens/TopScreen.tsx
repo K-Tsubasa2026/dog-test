@@ -1,4 +1,5 @@
 import styles from './TopScreen.module.css'
+import buttonStyles from '../styles/Button.module.css'
 import shibaImg from '../assets/dog-cutouts/shiba.png'
 import huskyImg from '../assets/dog-cutouts/husky.png'
 import pomeranianImg from '../assets/dog-cutouts/pomeranian.png'
@@ -72,7 +73,7 @@ function TopScreen({ onStart, disabled }: Props) {
 
       <button
         type="button"
-        className={styles.startButton}
+        className={buttonStyles.primaryButton}
         onClick={onStart}
         disabled={disabled}
       >

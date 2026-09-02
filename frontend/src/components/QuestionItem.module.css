@@ -1,0 +1,147 @@
+.item {
+  padding: 28px 0;
+  border-bottom: 1px solid rgba(74, 47, 28, 0.08);
+  transition:
+    opacity 0.3s ease,
+    filter 0.3s ease;
+}
+
+.item:first-child {
+  padding-top: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.textGroup {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.number {
+  flex-shrink: 0;
+  width: 44px;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #4a2f1c;
+  transition: color 0.3s ease;
+}
+
+.questionText {
+  flex: 1;
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  text-align: left;
+  color: #4a2f1c;
+  transition: color 0.3s ease;
+}
+
+.choices {
+  display: flex;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.answerButton {
+  min-width: 120px;
+  padding: 10px 28px;
+  border-radius: 999px;
+  border: 2px solid #ff7a3d;
+  background: white;
+  color: #ff7a3d;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.answerButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ff9f45, #ff7a3d);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 122, 61, 0.35);
+}
+
+.answerButton.selected {
+  background: linear-gradient(135deg, #ff9f45, #ff7a3d);
+  color: white;
+  box-shadow: 0 8px 20px rgba(255, 122, 61, 0.35);
+}
+
+/* 現在回答中: もっとも目立たせる */
+.current .questionText,
+.current .number {
+  font-weight: 700;
+  color: #4a2f1c;
+}
+
+/* 回答済み: グレーにして優先度を下げる。再回答は可能 */
+.answered .questionText,
+.answered .number {
+  color: #b8ab9e;
+}
+
+.answered .answerButton {
+  border-color: #d8cabf;
+  color: #c2b6a9;
+}
+
+.answered .answerButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #d8cabf, #c2b6a9);
+  color: white;
+  box-shadow: none;
+}
+
+.answered .answerButton.selected {
+  background: linear-gradient(135deg, #d8cabf, #c2b6a9);
+  color: white;
+  box-shadow: none;
+}
+
+/* 未解放: ぼかして内容を読めなくし、操作不可にする */
+.locked {
+  filter: blur(6px);
+  opacity: 0.45;
+  pointer-events: none;
+  user-select: none;
+}
+
+.answerButton:disabled {
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .textGroup {
+    width: 100%;
+  }
+
+  .choices {
+    width: 100%;
+  }
+
+  .answerButton {
+    flex: 1;
+    min-width: 0;
+  }
+}

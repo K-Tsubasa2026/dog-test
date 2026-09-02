@@ -3,22 +3,27 @@ import { fetchQuestions } from './api/questions'
 import { postDiagnosis } from './api/diagnoses'
 import DiagnosisResult from './components/DiagnosisResult'
 import TopScreen from './screens/TopScreen'
+import QuestionScreen from './screens/QuestionScreen'
+import { shuffle } from './utils/shuffle'
 import type { QuestionResponse } from './types/question'
-import type { AnswerRequest, DiagnosisResponse } from './types/diagnosis'
+import type { DiagnosisResponse } from './types/diagnosis'
 
-type Screen = 'top' | 'question' | 'loading' | 'result'
+type Screen = 'top' | 'question' | 'result'
+
+// questionId -> choiceId の辞書。回答済み質問数と現在位置はこの辞書のキー数から導出する
+type AnswersMap = Record<number, number>
 
 function App() {
   const [screen, setScreen] = useState<Screen>('top')
   const [questions, setQuestions] = useState<QuestionResponse[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [answers, setAnswers] = useState<AnswerRequest[]>([])
+  const [answers, setAnswers] = useState<AnswersMap>({})
   const [result, setResult] = useState<DiagnosisResponse | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     fetchQuestions()
-      .then(setQuestions)
+      .then((fetchedQuestions) => setQuestions(shuffle(fetchedQuestions)))
       .catch((err: Error) => setError(err.message))
   }, [])
 
@@ -27,27 +32,30 @@ function App() {
   }
 
   const handleAnswer = (questionId: number, choiceId: number) => {
-    const nextAnswers = [...answers, { questionId, choiceId }]
-    setAnswers(nextAnswers)
+    setAnswers((prev) => ({ ...prev, [questionId]: choiceId }))
+  }
 
-    if (currentIndex + 1 >= questions.length) {
-      setScreen('loading')
-      postDiagnosis({ answers: nextAnswers })
-        .then((res) => {
-          setResult(res)
-          setScreen('result')
-        })
-        .catch((err: Error) => setError(err.message))
-    } else {
-      setCurrentIndex((index) => index + 1)
-    }
+  const handleSubmit = () => {
+    if (isSubmitting) return
+    setIsSubmitting(true)
+    const answerList = questions.map((question) => ({
+      questionId: question.id,
+      choiceId: answers[question.id],
+    }))
+    postDiagnosis({ answers: answerList })
+      .then((res) => {
+        setResult(res)
+        setScreen('result')
+      })
+      .catch((err: Error) => setError(err.message))
+      .finally(() => setIsSubmitting(false))
   }
 
   const handleRestart = () => {
     setScreen('top')
-    setCurrentIndex(0)
-    setAnswers([])
+    setAnswers({})
     setResult(null)
+    setQuestions((prev) => shuffle(prev))
   }
 
   if (error) {
@@ -61,30 +69,15 @@ function App() {
   }
 
   if (screen === 'question') {
-    const currentQuestion = questions[currentIndex]
     return (
-      <div>
-        <p>
-          {currentIndex + 1} / {questions.length}
-        </p>
-        <h2>{currentQuestion.content}</h2>
-        <div>
-          {currentQuestion.choices.map((choice) => (
-            <button
-              key={choice.id}
-              type="button"
-              onClick={() => handleAnswer(currentQuestion.id, choice.id)}
-            >
-              {choice.content}
-            </button>
-          ))}
-        </div>
-      </div>
+      <QuestionScreen
+        questions={questions}
+        answers={answers}
+        onAnswer={handleAnswer}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
     )
-  }
-
-  if (screen === 'loading') {
-    return <p>診断中...</p>
   }
 
   if (result) {

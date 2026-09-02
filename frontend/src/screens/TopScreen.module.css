@@ -78,24 +78,3 @@
   line-height: 1.4;
 }
 
-.startButton {
-  font-size: 1.2rem;
-  font-weight: 700;
-  padding: 16px 48px;
-  border-radius: 999px;
-  border: none;
-  background: linear-gradient(135deg, #ff9f45, #ff7a3d);
-  color: white;
-  cursor: pointer;
-  box-shadow: 0 8px 20px rgba(255, 122, 61, 0.35);
-  transition: transform 0.15s ease;
-}
-
-.startButton:hover:not(:disabled) {
-  transform: translateY(-2px);
-}
-
-.startButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}

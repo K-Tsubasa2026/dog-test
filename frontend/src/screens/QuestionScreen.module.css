@@ -1,0 +1,182 @@
+.container {
+  position: relative;
+  min-height: 100vh;
+  padding: 96px 24px 50vh;
+  background: #ffffff;
+  overflow-x: hidden;
+}
+
+/* =============================================
+   肉球背景アニメーション
+   ============================================= */
+
+.pawPad {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.pawPad span {
+  position: absolute;
+  bottom: 100px;
+  animation: pawPad linear infinite;
+  opacity: 0;
+}
+
+.pawPad span::before {
+  font-family: 'Font Awesome 7 Free';
+  font-weight: 900;
+  content: '\f1b0';
+  line-height: 1;
+  display: block;
+}
+
+/* left は画面幅の%ではなく画面中央(50%)からのオフセットで指定し、
+   中央の質問コンテンツ(最大幅720px = 中央から360px)より外側に配置する */
+
+.pawPad span:nth-child(1) {
+  left: calc(50% - 620px);
+  top: 15%;
+  font-size: 64px;
+  animation-duration: 30s;
+  animation-delay: 0s;
+  color: #d9d7f1;
+}
+
+.pawPad span:nth-child(2) {
+  left: calc(50% - 560px);
+  top: 60%;
+  font-size: 44px;
+  animation-duration: 20s;
+  animation-delay: 4s;
+  color: #fffdde;
+}
+
+.pawPad span:nth-child(3) {
+  left: calc(50% - 480px);
+  top: 40%;
+  font-size: 80px;
+  animation-duration: 10s;
+  animation-delay: 2s;
+  color: #e7fbbe;
+}
+
+.pawPad span:nth-child(4) {
+  left: calc(50% - 420px);
+  top: 60%;
+  font-size: 52px;
+  animation-duration: 7s;
+  animation-delay: 1s;
+  color: #ffcbcb;
+}
+
+.pawPad span:nth-child(5) {
+  left: calc(50% + 420px);
+  top: 75%;
+  font-size: 72px;
+  animation-duration: 8s;
+  animation-delay: 6s;
+  color: #d6e5fa;
+}
+
+.pawPad span:nth-child(6) {
+  left: calc(50% + 480px);
+  top: 10%;
+  font-size: 40px;
+  animation-duration: 25s;
+  animation-delay: 3s;
+  color: #d9d7f1;
+}
+
+.pawPad span:nth-child(7) {
+  left: calc(50% + 560px);
+  top: 55%;
+  font-size: 60px;
+  animation-duration: 18s;
+  animation-delay: 8s;
+  color: #ffcbcb;
+}
+
+.pawPad span:nth-child(8) {
+  left: calc(50% + 620px);
+  top: 100%;
+  font-size: 48px;
+  animation-duration: 12s;
+  animation-delay: 5s;
+  color: #e7fbbe;
+}
+
+/* コンテンツ幅(720px)+左右の肉球スペースが確保できない画面では非表示にし、
+   質問・回答の視認性を優先する */
+@media (max-width: 1200px) {
+  .pawPad {
+    display: none;
+  }
+}
+
+@keyframes pawPad {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  10% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+
+  20% {
+    transform: scale(1.15);
+  }
+
+  30% {
+    transform: scale(0.9);
+  }
+
+  40% {
+    transform: scale(1.15);
+  }
+
+  50% {
+    transform: scale(0.9);
+  }
+
+  60% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+
+  70% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+/* =============================================
+   質問リスト
+   ============================================= */
+
+.list {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.submitRow {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  padding-top: 48px;
+}
