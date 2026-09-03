@@ -3,41 +3,70 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 24px 64px;
   background: #ffffff;
   text-align: center;
 }
 
-.eyebrow {
-  letter-spacing: 0.2em;
-  font-size: 0.75rem;
-  color: #c07a3e;
-  font-weight: 700;
-  margin: 0;
+/* =============================================
+   ヒーロー(白背景・タイトルのみ)
+   ============================================= */
+
+.heroSection {
+  width: 100%;
+  padding: 48px 24px 24px;
 }
 
 .title {
   font-size: 2.75rem;
-  margin: 8px 0 16px;
+  margin: 8px 0 0;
   color: #4a2f1c;
 }
 
-.description {
-  color: #6b5c4d;
-  margin: 0 0 40px;
-  font-size: 1rem;
+/* =============================================
+   犬画像セクション(薄いオレンジ背景)
+   ============================================= */
+
+.dogSection {
+  position: relative;
+  width: 100%;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 88px 24px 64px;
+}
+
+/* 背景色と不規則な境界線は専用の疑似要素に持たせ、
+   コンテンツ(犬カード・ボタン)が一緒に切り取られないようにする */
+.dogSectionBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #fbe8d6;
+  clip-path: polygon(
+    0% 9%,
+    12% 3%,
+    27% 8%,
+    41% 2%,
+    58% 7%,
+    74% 1%,
+    88% 6%,
+    100% 2%,
+    100% 100%,
+    0% 100%
+  );
 }
 
 .dogRow {
   position: relative;
   z-index: 1;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  justify-items: center;
+  gap: 16px 24px;
   margin-bottom: 48px;
   max-width: 1400px;
+  width: 100%;
 }
 
 .dogCard {
@@ -45,6 +74,7 @@
   z-index: 1;
   min-width: 180px;
   max-width: 280px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -68,13 +98,53 @@
   font-weight: 700;
   font-size: 1.05rem;
   color: #4a2f1c;
-  margin: 0 0 4px;
-}
-
-.dogTitle {
-  font-size: 0.8rem;
-  color: #8a7663;
   margin: 0;
-  line-height: 1.4;
 }
 
+.dogSection > button {
+  position: relative;
+  z-index: 1;
+}
+
+/* =============================================
+   レスポンシブ: 5列 -> 3列 -> 2列 -> 1列
+   ============================================= */
+
+@media (max-width: 1040px) {
+  .dogRow {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 720px;
+  }
+}
+
+@media (max-width: 640px) {
+  .dogRow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 480px;
+  }
+
+  /* 5枚目(2+2+1の"1")だけ2列分の幅の中央に配置する */
+  .dogCard:nth-child(5) {
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+
+  .dogImage {
+    height: 220px;
+  }
+
+  .dogSection {
+    padding-top: 64px;
+  }
+}
+
+@media (max-width: 420px) {
+  .dogRow {
+    grid-template-columns: 1fr;
+    max-width: 260px;
+  }
+
+  .dogCard:nth-child(5) {
+    grid-column: auto;
+  }
+}
