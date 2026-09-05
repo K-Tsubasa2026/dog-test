@@ -22,3 +22,36 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* 質問画面の「はい」「いいえ」ボタンと同じデザイン仕様(アウトライン)。
+   色・枠線・角丸・hover・transitionを共通化するためのクラス */
+.outlineButton {
+  min-width: 96px;
+  padding: 14px 32px;
+  border-radius: 999px;
+  border: 2px solid #ff7a3d;
+  background: white;
+  color: #ff7a3d;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.outlineButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ff9f45, #ff7a3d);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 122, 61, 0.35);
+}
+
+.outlineButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchQuestions } from './api/questions'
 import { postDiagnosis } from './api/diagnoses'
-import DiagnosisResult from './components/DiagnosisResult'
+import ResultScreen from './screens/ResultScreen'
 import TopScreen from './screens/TopScreen'
 import QuestionScreen from './screens/QuestionScreen'
 import { shuffle } from './utils/shuffle'
@@ -81,14 +81,7 @@ function App() {
   }
 
   if (result) {
-    return (
-      <div>
-        <DiagnosisResult result={result} />
-        <button type="button" onClick={handleRestart}>
-          もう一度診断する
-        </button>
-      </div>
-    )
+    return <ResultScreen result={result} onRestart={handleRestart} />
   }
 
   return null

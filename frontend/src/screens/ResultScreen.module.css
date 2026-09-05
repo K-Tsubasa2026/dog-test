@@ -1,0 +1,179 @@
+.container {
+  min-height: 100vh;
+  background: #ffffff;
+  padding: 48px 24px 64px;
+}
+
+.layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(300px, 400px) 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* =============================================
+   左カード: わんこタイプ
+   ============================================= */
+
+.leftCard {
+  background: #ffffff;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.leftCardTop {
+  position: relative;
+  padding: 48px 32px 40px;
+  text-align: center;
+}
+
+/* TOP画面の dogSectionBg と同じ配色・考え方だが、
+   オレンジが上・白が下になるよう境界の向きを反転させている */
+.leftCardTopBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #fbe8d6;
+  clip-path: polygon(
+    0% 91%,
+    12% 97%,
+    27% 92%,
+    41% 98%,
+    58% 93%,
+    74% 99%,
+    88% 94%,
+    100% 98%,
+    100% 0%,
+    0% 0%
+  );
+}
+
+/* 表示順は犬種名→キャッチコピー。キャッチコピーをメインの見出しとして
+   目立たせ、犬種名は補足的に小さく表示する */
+.dogName {
+  position: relative;
+  z-index: 1;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #8a7663;
+  margin: 0 0 8px;
+}
+
+.dogTitle {
+  position: relative;
+  z-index: 1;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4a2f1c;
+  margin: 0 0 24px;
+  line-height: 1.4;
+}
+
+.dogImage {
+  position: relative;
+  z-index: 1;
+  height: 240px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.18));
+}
+
+.leftCardBottom {
+  padding: 32px;
+  text-align: left;
+}
+
+.description {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #4a2f1c;
+  white-space: pre-line;
+}
+
+/* =============================================
+   右カラム: スコア + 豆知識 + アクション
+   ============================================= */
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.chartCard,
+.triviaCard {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 32px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+.triviaHeading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ff7a3d;
+  margin: 0 0 12px;
+}
+
+.triviaText {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #4a2f1c;
+  white-space: pre-line;
+}
+
+/* layoutの外側(container直下)に配置する下部アクションエリア。
+   幅はlayoutに揃えて中央寄せする */
+.actions {
+  max-width: 1100px;
+  margin: 32px auto 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* =============================================
+   レスポンシブ
+   ============================================= */
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+    max-width: 560px;
+  }
+
+  /* 「2列+1列」の中間状態を避け、レイアウトが1カラムになるタイミングで
+     ボタンも即座に1列3段へ切り替える */
+  .actions {
+    max-width: 560px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 32px 16px 48px;
+  }
+
+  .leftCardTop {
+    padding: 40px 24px 32px;
+  }
+
+  .leftCardBottom,
+  .chartCard,
+  .triviaCard {
+    padding: 24px;
+  }
+
+  .dogImage {
+    height: 200px;
+  }
+}
