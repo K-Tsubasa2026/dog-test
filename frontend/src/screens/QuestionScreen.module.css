@@ -37,10 +37,14 @@
 }
 
 /* left は画面幅の%ではなく画面中央(50%)からのオフセットで指定し、
-   中央の質問コンテンツ(最大幅720px = 中央から360px)より外側に配置する */
+   中央の質問エリア(幅60vw = 中央から30vw)より外側、
+   つまり肉球:質問:肉球 = 2:6:2 の左右20%エリアに収まるよう配置する。
+   アニメーションでscale(最大1.15倍)まで拡大するため、font-sizeが
+   大きい肉球ほど境界から離す(オフセットを大きくする)ことで、
+   拡大時にも中央の質問エリアへはみ出さないようにする */
 
 .pawPad span:nth-child(1) {
-  left: calc(50% - 620px);
+  left: calc(50% - 38vw);
   top: 15%;
   font-size: 64px;
   animation-duration: 30s;
@@ -49,7 +53,7 @@
 }
 
 .pawPad span:nth-child(2) {
-  left: calc(50% - 560px);
+  left: calc(50% - 34vw);
   top: 60%;
   font-size: 44px;
   animation-duration: 20s;
@@ -58,7 +62,7 @@
 }
 
 .pawPad span:nth-child(3) {
-  left: calc(50% - 480px);
+  left: calc(50% - 42vw);
   top: 40%;
   font-size: 80px;
   animation-duration: 10s;
@@ -67,7 +71,7 @@
 }
 
 .pawPad span:nth-child(4) {
-  left: calc(50% - 420px);
+  left: calc(50% - 36vw);
   top: 60%;
   font-size: 52px;
   animation-duration: 7s;
@@ -76,7 +80,7 @@
 }
 
 .pawPad span:nth-child(5) {
-  left: calc(50% + 420px);
+  left: calc(50% + 40vw);
   top: 75%;
   font-size: 72px;
   animation-duration: 8s;
@@ -85,7 +89,7 @@
 }
 
 .pawPad span:nth-child(6) {
-  left: calc(50% + 480px);
+  left: calc(50% + 33vw);
   top: 10%;
   font-size: 40px;
   animation-duration: 25s;
@@ -94,7 +98,7 @@
 }
 
 .pawPad span:nth-child(7) {
-  left: calc(50% + 560px);
+  left: calc(50% + 37vw);
   top: 55%;
   font-size: 60px;
   animation-duration: 18s;
@@ -103,7 +107,7 @@
 }
 
 .pawPad span:nth-child(8) {
-  left: calc(50% + 620px);
+  left: calc(50% + 35vw);
   top: 100%;
   font-size: 48px;
   animation-duration: 12s;
@@ -111,11 +115,69 @@
   color: #e7fbbe;
 }
 
-/* コンテンツ幅(720px)+左右の肉球スペースが確保できない画面では非表示にし、
-   質問・回答の視認性を優先する */
-@media (max-width: 1200px) {
+/* スマートフォン幅では肉球を表示するスペースがないため非表示にする */
+@media (max-width: 899px) {
   .pawPad {
     display: none;
+  }
+}
+
+/* タブレット幅(900px〜1439px)では、質問エリアの外側の限られたスペースに
+   合わせて肉球を8個から4個(左右2個ずつ)に間引き、サイズも縮小して表示する。
+   PC(1440px以上)は既存のnth-child指定(サイズ・位置とも)をそのまま使う */
+@media (min-width: 900px) and (max-width: 1439px) {
+  .pawPad span:nth-child(2),
+  .pawPad span:nth-child(4),
+  .pawPad span:nth-child(6),
+  .pawPad span:nth-child(8) {
+    display: none;
+  }
+}
+
+/* 900px〜1200px: 質問エリア(.list)はこの範囲でmax-width:720px固定 */
+@media (min-width: 900px) and (max-width: 1200px) {
+  .pawPad span:nth-child(1) {
+    left: calc((100vw - 720px) / 2 - 31px);
+    font-size: 18px;
+  }
+
+  .pawPad span:nth-child(3) {
+    left: calc((100vw - 720px) / 2 - 33px);
+    font-size: 20px;
+  }
+
+  .pawPad span:nth-child(5) {
+    left: calc((100vw + 720px) / 2 + 31px);
+    font-size: 18px;
+  }
+
+  .pawPad span:nth-child(7) {
+    left: calc((100vw + 720px) / 2 + 33px);
+    font-size: 20px;
+  }
+}
+
+/* 1201px〜1439px: 質問エリア(.list)はこの範囲で約862px固定
+   (width: max(60vw, 862px) が常に862px側で決まる幅) */
+@media (min-width: 1201px) and (max-width: 1439px) {
+  .pawPad span:nth-child(1) {
+    left: calc((100vw - 862px) / 2 - 31px);
+    font-size: 18px;
+  }
+
+  .pawPad span:nth-child(3) {
+    left: calc((100vw - 862px) / 2 - 33px);
+    font-size: 20px;
+  }
+
+  .pawPad span:nth-child(5) {
+    left: calc((100vw + 862px) / 2 + 31px);
+    font-size: 18px;
+  }
+
+  .pawPad span:nth-child(7) {
+    left: calc((100vw + 862px) / 2 + 33px);
+    font-size: 20px;
   }
 }
 
@@ -169,8 +231,19 @@
 .list {
   position: relative;
   z-index: 1;
+  width: 100%;
   max-width: 720px;
   margin: 0 auto;
+}
+
+/* 質問エリア自体は画面幅の60%を基本とする(肉球:質問:肉球 = 2:6:2)。
+   ただし60vwだと1440px未満では長い質問文が2行になってしまうため、
+   850pxを下限として確保する(1440px以上では自然に60vwが上回り比率通りになる) */
+@media (min-width: 1201px) {
+  .list {
+    width: max(60vw, 862px);
+    max-width: 960px;
+  }
 }
 
 .submitRow {
