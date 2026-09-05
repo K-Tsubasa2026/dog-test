@@ -1,43 +1,10 @@
+/* SVG本体のみCSSクラスでスタイリングする。子要素(polygon/line/text等)は
+   html-to-imageでのPNG化時にクラス経由のスタイルが正しく複製されないため
+   RadarChart.tsx側でSVG属性として直接指定している */
 .svg {
   width: 100%;
   max-width: 340px;
   height: auto;
   display: block;
   margin: 0 auto;
-}
-
-.gridPolygon {
-  fill: none;
-  stroke: #e5ddd2;
-  stroke-width: 1;
-}
-
-.gridLine {
-  stroke: #e5ddd2;
-  stroke-width: 1;
-}
-
-.dataPolygon {
-  fill: #ff7a3d;
-  fill-opacity: 0.3;
-  stroke: #ff7a3d;
-  stroke-width: 2;
-  stroke-linejoin: round;
-}
-
-.dataPoint {
-  fill: #ff7a3d;
-}
-
-.axisLabel {
-  font-size: 13px;
-  font-weight: 700;
-  fill: #4a2f1c;
-}
-
-/* 項目名(主)より弱い見た目にする。ResultScreenのdogNameと同程度の強さ */
-.axisValue {
-  font-size: 11px;
-  font-weight: 400;
-  fill: #8a7663;
 }

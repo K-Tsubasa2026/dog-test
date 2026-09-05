@@ -139,6 +139,15 @@
   gap: 16px;
 }
 
+/* 画像保存用ResultCardのoff-screen配置。display:noneにすると
+   html-to-imageがキャプチャできないため、画面外へ絶対配置する */
+.offscreen {
+  position: fixed;
+  top: 0;
+  left: -9999px;
+  pointer-events: none;
+}
+
 /* =============================================
    レスポンシブ
    ============================================= */

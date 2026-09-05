@@ -56,10 +56,15 @@ function RadarChart({ scores }: Props) {
       role="img"
       aria-label="あなたの5軸スコア"
     >
+      {/* html-to-imageでのPNG化時、SVG子要素はCSSクラス経由のスタイルが
+          正しく複製されずデフォルトのfill(黒)になってしまうため、
+          fill/strokeはCSSクラスではなくSVG属性で直接指定する */}
       {GRID_LEVELS.map((level) => (
         <polygon
           key={level}
-          className={styles.gridPolygon}
+          fill="none"
+          stroke="#e5ddd2"
+          strokeWidth={1}
           points={polygonPoints(AXES.map(() => level))}
         />
       ))}
@@ -69,7 +74,8 @@ function RadarChart({ scores }: Props) {
         return (
           <line
             key={axis.key}
-            className={styles.gridLine}
+            stroke="#e5ddd2"
+            strokeWidth={1}
             x1={CENTER}
             y1={CENTER}
             x2={outer.x}
@@ -78,11 +84,20 @@ function RadarChart({ scores }: Props) {
         )
       })}
 
-      <polygon className={styles.dataPolygon} points={polygonPoints(dataValues)} />
+      <polygon
+        fill="#ff7a3d"
+        fillOpacity={0.3}
+        stroke="#ff7a3d"
+        strokeWidth={2}
+        strokeLinejoin="round"
+        points={polygonPoints(dataValues)}
+      />
 
       {dataValues.map((value, index) => {
         const p = pointForValue(index, value)
-        return <circle key={AXES[index].key} className={styles.dataPoint} cx={p.x} cy={p.y} r={4} />
+        return (
+          <circle key={AXES[index].key} fill="#ff7a3d" cx={p.x} cy={p.y} r={4} />
+        )
       })}
 
       {AXES.map((axis, index) => {
@@ -90,14 +105,22 @@ function RadarChart({ scores }: Props) {
         return (
           <text
             key={axis.key}
-            className={styles.axisLabel}
+            fill="#4a2f1c"
+            fontSize={13}
+            fontWeight={700}
             x={labelPoint.x}
             y={labelPoint.y}
             textAnchor="middle"
             dominantBaseline="middle"
           >
             {axis.label}
-            <tspan x={labelPoint.x} dy="1.3em" className={styles.axisValue}>
+            <tspan
+              x={labelPoint.x}
+              dy="1.3em"
+              fill="#8a7663"
+              fontSize={11}
+              fontWeight={400}
+            >
               {dataValues[index].toFixed(1)}
             </tspan>
           </text>
