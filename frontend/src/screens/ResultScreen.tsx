@@ -5,25 +5,12 @@ import RadarChart from '../components/RadarChart'
 import ResultCard from '../components/ResultCard'
 import { downloadElementAsPng } from '../utils/downloadImage'
 import { shareResultToLine } from '../utils/lineShare'
-import shibaImg from '../assets/dog-cutouts/shiba.png'
-import huskyImg from '../assets/dog-cutouts/husky.png'
-import pomeranianImg from '../assets/dog-cutouts/pomeranian.png'
-import toypoodleImg from '../assets/dog-cutouts/toypoodle.png'
-import goldenImg from '../assets/dog-cutouts/golden.png'
+import { DOG_IMAGES } from '../utils/dogImages'
 import type { DiagnosisResponse } from '../types/diagnosis'
 
 interface Props {
   result: DiagnosisResponse
   onRestart: () => void
-}
-
-// TOP画面と同じ透過画像をdogType.codeで再利用する
-const DOG_IMAGES: Record<string, string> = {
-  SHIBA: shibaImg,
-  HUSKY: huskyImg,
-  POMERANIAN: pomeranianImg,
-  TOYPOODLE: toypoodleImg,
-  GOLDEN: goldenImg,
 }
 
 function ResultScreen({ result, onRestart }: Props) {
