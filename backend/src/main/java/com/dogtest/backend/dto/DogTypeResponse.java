@@ -14,5 +14,6 @@ public record DogTypeResponse(
         BigDecimal activity,
         BigDecimal independence,
         BigDecimal emotionalExpression,
-        BigDecimal caution) {
+        BigDecimal caution,
+        BigDecimal cooperativeness) {
 }

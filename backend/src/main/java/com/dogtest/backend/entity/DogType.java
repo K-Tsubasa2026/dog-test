@@ -57,4 +57,7 @@ public class DogType {
 
     @Column(nullable = false, precision = 3, scale = 1)
     private BigDecimal caution;
+
+    @Column(nullable = false, precision = 3, scale = 1)
+    private BigDecimal cooperativeness;
 }

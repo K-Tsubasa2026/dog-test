@@ -83,6 +83,7 @@ public class DiagnosisService {
         int independence = 0;
         int emotionalExpression = 0;
         int caution = 0;
+        int cooperativeness = 0;
 
         for (Choice choice : choices) {
             sociability += choice.getSociabilityDelta();
@@ -90,9 +91,10 @@ public class DiagnosisService {
             independence += choice.getIndependenceDelta();
             emotionalExpression += choice.getEmotionalExpressionDelta();
             caution += choice.getCautionDelta();
+            cooperativeness += choice.getCooperativenessDelta();
         }
 
-        return new RawScores(sociability, activity, independence, emotionalExpression, caution);
+        return new RawScores(sociability, activity, independence, emotionalExpression, caution, cooperativeness);
     }
 
     private ScoreRange calculateTheoreticalRange() {
@@ -105,6 +107,7 @@ public class DiagnosisService {
         int minIndependence = 0, maxIndependence = 0;
         int minEmotionalExpression = 0, maxEmotionalExpression = 0;
         int minCaution = 0, maxCaution = 0;
+        int minCooperativeness = 0, maxCooperativeness = 0;
 
         for (Question question : questions) {
             List<Choice> questionChoices = choicesByQuestionId.getOrDefault(question.getId(), List.of());
@@ -123,6 +126,9 @@ public class DiagnosisService {
 
             minCaution += minDelta(questionChoices, Choice::getCautionDelta);
             maxCaution += maxDelta(questionChoices, Choice::getCautionDelta);
+
+            minCooperativeness += minDelta(questionChoices, Choice::getCooperativenessDelta);
+            maxCooperativeness += maxDelta(questionChoices, Choice::getCooperativenessDelta);
         }
 
         return new ScoreRange(
@@ -130,7 +136,8 @@ public class DiagnosisService {
                 minActivity, maxActivity,
                 minIndependence, maxIndependence,
                 minEmotionalExpression, maxEmotionalExpression,
-                minCaution, maxCaution);
+                minCaution, maxCaution,
+                minCooperativeness, maxCooperativeness);
     }
 
     private int minDelta(List<Choice> choices, ToIntFunction<Choice> extractor) {
@@ -147,7 +154,8 @@ public class DiagnosisService {
                 normalizeAxis(raw.activity(), range.minActivity(), range.maxActivity()),
                 normalizeAxis(raw.independence(), range.minIndependence(), range.maxIndependence()),
                 normalizeAxis(raw.emotionalExpression(), range.minEmotionalExpression(), range.maxEmotionalExpression()),
-                normalizeAxis(raw.caution(), range.minCaution(), range.maxCaution()));
+                normalizeAxis(raw.caution(), range.minCaution(), range.maxCaution()),
+                normalizeAxis(raw.cooperativeness(), range.minCooperativeness(), range.maxCooperativeness()));
     }
 
     private BigDecimal normalizeAxis(int raw, int theoreticalMin, int theoreticalMax) {
@@ -192,13 +200,16 @@ public class DiagnosisService {
         double dEmotionalExpression = userScores.emotionalExpression().doubleValue()
                 - dogType.getEmotionalExpression().doubleValue();
         double dCaution = userScores.caution().doubleValue() - dogType.getCaution().doubleValue();
+        double dCooperativeness = userScores.cooperativeness().doubleValue()
+                - dogType.getCooperativeness().doubleValue();
 
         return Math.sqrt(
                 dSociability * dSociability
                         + dActivity * dActivity
                         + dIndependence * dIndependence
                         + dEmotionalExpression * dEmotionalExpression
-                        + dCaution * dCaution);
+                        + dCaution * dCaution
+                        + dCooperativeness * dCooperativeness);
     }
 
     private DogTypeResponse toDogTypeResponse(DogType dogType) {
@@ -214,7 +225,8 @@ public class DiagnosisService {
                 dogType.getActivity(),
                 dogType.getIndependence(),
                 dogType.getEmotionalExpression(),
-                dogType.getCaution());
+                dogType.getCaution(),
+                dogType.getCooperativeness());
     }
 
     private record RawScores(
@@ -222,7 +234,8 @@ public class DiagnosisService {
             int activity,
             int independence,
             int emotionalExpression,
-            int caution) {
+            int caution,
+            int cooperativeness) {
     }
 
     private record ScoreRange(
@@ -230,6 +243,7 @@ public class DiagnosisService {
             int minActivity, int maxActivity,
             int minIndependence, int maxIndependence,
             int minEmotionalExpression, int maxEmotionalExpression,
-            int minCaution, int maxCaution) {
+            int minCaution, int maxCaution,
+            int minCooperativeness, int maxCooperativeness) {
     }
 }

@@ -57,15 +57,18 @@
   );
 }
 
+/* 12犬種(小型4・中型4・大型4)を4列x3行で表示する想定のグリッド。
+   画像アセットが未用意の犬種は表示対象から自動的に除外されるため、
+   実際の表示件数が5〜12件のいずれでも崩れないようにしている */
 .dogRow {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   justify-items: center;
   gap: 16px 24px;
   margin-bottom: 48px;
-  max-width: 1400px;
+  max-width: 1200px;
   width: 100%;
 }
 
@@ -107,7 +110,7 @@
 }
 
 /* =============================================
-   レスポンシブ: 5列 -> 3列 -> 2列 -> 1列
+   レスポンシブ: 4列 -> 3列 -> 2列 -> 1列
    ============================================= */
 
 @media (max-width: 1040px) {
@@ -123,12 +126,6 @@
     max-width: 480px;
   }
 
-  /* 5枚目(2+2+1の"1")だけ2列分の幅の中央に配置する */
-  .dogCard:nth-child(5) {
-    grid-column: 1 / -1;
-    justify-self: center;
-  }
-
   .dogImage {
     height: 220px;
   }
@@ -142,9 +139,5 @@
   .dogRow {
     grid-template-columns: 1fr;
     max-width: 260px;
-  }
-
-  .dogCard:nth-child(5) {
-    grid-column: auto;
   }
 }
