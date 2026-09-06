@@ -1,0 +1,10 @@
+/* SVG本体のみCSSクラスでスタイリングする。子要素(polygon/line/text等)は
+   html-to-imageでのPNG化時にクラス経由のスタイルが正しく複製されないため
+   RadarChart.tsx側でSVG属性として直接指定している */
+.svg {
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
