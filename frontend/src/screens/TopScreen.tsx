@@ -1,10 +1,15 @@
 import styles from './TopScreen.module.css'
 import buttonStyles from '../styles/Button.module.css'
-import { DOG_PREVIEWS } from '../utils/dogImages'
+import { DOG_PREVIEWS, type DogPreview } from '../utils/dogImages'
 
 interface Props {
   onStart: () => void
   disabled: boolean
+}
+
+// topScale(縮小率)からTOP画面用のtransformを組み立てる
+function dogImageTransform(dog: DogPreview) {
+  return dog.topScale ? `scale(${dog.topScale})` : undefined
 }
 
 function TopScreen({ onStart, disabled }: Props) {
@@ -20,11 +25,14 @@ function TopScreen({ onStart, disabled }: Props) {
         <div className={styles.dogRow}>
           {DOG_PREVIEWS.map((dog) => (
             <div key={dog.name} className={styles.dogCard}>
-              <img
-                src={dog.image}
-                alt={dog.name}
-                className={styles.dogImage}
-              />
+              <div className={styles.dogImageWrap}>
+                <img
+                  src={dog.image}
+                  alt={dog.name}
+                  className={styles.dogImage}
+                  style={{ transform: dogImageTransform(dog) }}
+                />
+              </div>
               <p className={styles.dogName}>{dog.name}</p>
             </div>
           ))}

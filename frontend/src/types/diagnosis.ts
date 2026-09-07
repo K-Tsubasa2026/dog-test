@@ -20,6 +20,7 @@ export interface DogTypeResponse {
   independence: number
   emotionalExpression: number
   caution: number
+  cooperativeness: number
 }
 
 export interface UserScoresResponse {
@@ -28,6 +29,7 @@ export interface UserScoresResponse {
   independence: number
   emotionalExpression: number
   caution: number
+  cooperativeness: number
 }
 
 export interface DiagnosisResponse {

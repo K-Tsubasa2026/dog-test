@@ -11,14 +11,17 @@ const AXES: { key: keyof UserScoresResponse; label: string }[] = [
   { key: 'independence', label: '独立性' },
   { key: 'emotionalExpression', label: '感情表現' },
   { key: 'caution', label: '警戒心' },
+  { key: 'cooperativeness', label: '協調性' },
 ]
 
 const MIN_VALUE = 1
 const MAX_VALUE = 5
-const SIZE = 320
+// 6角形になった際に上下の頂点のラベル(項目名+数値の2行)がSVG外へ
+// はみ出さないよう、5角形の時よりSIZEを広げ、LABEL_RADIUSをやや控えめにしている
+const SIZE = 350
 const CENTER = SIZE / 2
 const RADIUS = 105
-const LABEL_RADIUS = RADIUS + 34
+const LABEL_RADIUS = RADIUS + 30
 
 function angleForIndex(index: number) {
   return (Math.PI * 2 * index) / AXES.length - Math.PI / 2
@@ -54,7 +57,7 @@ function RadarChart({ scores }: Props) {
       className={styles.svg}
       viewBox={`0 0 ${SIZE} ${SIZE}`}
       role="img"
-      aria-label="あなたの5軸スコア"
+      aria-label="あなたの6軸スコア"
     >
       {/* html-to-imageでのPNG化時、SVG子要素はCSSクラス経由のスタイルが
           正しく複製されずデフォルトのfill(黒)になってしまうため、

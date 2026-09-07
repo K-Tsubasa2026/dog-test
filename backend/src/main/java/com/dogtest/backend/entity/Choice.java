@@ -47,4 +47,7 @@ public class Choice {
 
     @Column(name = "caution_delta", nullable = false)
     private Integer cautionDelta;
+
+    @Column(name = "cooperativeness_delta", nullable = false)
+    private Integer cooperativenessDelta;
 }
