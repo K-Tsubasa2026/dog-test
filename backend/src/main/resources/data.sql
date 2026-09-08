@@ -3,9 +3,11 @@
 -- アプリ起動のたびに実行される（spring.sql.init.mode=always）。
 -- Question / Choice / DogType は固定マスターデータのため、
 -- 起動のたびに全消去してから再投入する方式を採用している。
+-- users は開発用のログイン確認アカウントのみ(新規登録機能が
+-- まだ無いため)、同様に洗い替える。
 -- =========================================================
 
-TRUNCATE TABLE choice, question, dog_type RESTART IDENTITY CASCADE;
+TRUNCATE TABLE choice, question, dog_type, users RESTART IDENTITY CASCADE;
 
 -- ---------------------------------------------------------
 -- Question（30件、6軸 x 5問、display_order = 1〜30）
@@ -219,6 +221,13 @@ INSERT INTO dog_type (id, code, name, title, description, trivia, image_url, soc
 '/images/samoyed.jpg', 5.0, 4.0, 4.5, 4.0, 2.0, 3.5);
 
 -- ---------------------------------------------------------
+-- User（開発用のログイン確認アカウント。新規登録機能実装までの暫定）
+-- email: test@example.com / password: password123 (BCryptハッシュ済み)
+-- ---------------------------------------------------------
+INSERT INTO users (id, email, password, created_at) VALUES
+(1, 'test@example.com', '$2a$10$oT9kHVeCGORxFZ4bQ0sOOuwaVqgDgCxkyvJHds7Qo.PGgTOzqKz9G', now());
+
+-- ---------------------------------------------------------
 -- IDENTITY列の採番シーケンスを実データに合わせてリセット
 -- 明示的にIDを指定してINSERTしているため、アプリ側からの
 -- 新規INSERT時に主キーが衝突しないよう調整する。
@@ -226,3 +235,4 @@ INSERT INTO dog_type (id, code, name, title, description, trivia, image_url, soc
 SELECT setval('question_id_seq', (SELECT MAX(id) FROM question));
 SELECT setval('choice_id_seq', (SELECT MAX(id) FROM choice));
 SELECT setval('dog_type_id_seq', (SELECT MAX(id) FROM dog_type));
+SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
