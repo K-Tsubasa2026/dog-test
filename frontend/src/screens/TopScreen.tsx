@@ -1,6 +1,10 @@
+import { useState } from 'react'
 import styles from './TopScreen.module.css'
 import buttonStyles from '../styles/Button.module.css'
 import { DOG_PREVIEWS, type DogPreview } from '../utils/dogImages'
+import LoginModal from '../components/LoginModal'
+import ConfirmModal from '../components/ConfirmModal'
+import { getToken, saveToken, clearToken } from '../utils/authToken'
 
 interface Props {
   onStart: () => void
@@ -13,8 +17,48 @@ function dogImageTransform(dog: DogPreview) {
 }
 
 function TopScreen({ onStart, disabled }: Props) {
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
+  // 前回ログインしたトークンがブラウザに残っていれば、開いた時点でログイン中扱いにする
+  const [isLoggedIn, setIsLoggedIn] = useState(() => getToken() !== null)
+
+  const handleLoginSuccess = (token: string) => {
+    saveToken(token)
+    setIsLoggedIn(true)
+    setIsLoginModalOpen(false)
+  }
+
+  const handleLogout = () => {
+    clearToken()
+    setIsLoggedIn(false)
+    setIsLogoutConfirmOpen(false)
+  }
+
   return (
     <div className={styles.container}>
+      <nav className={styles.headerNav}>
+        <span className={styles.navTextItem}>新規登録</span>
+        <span className={styles.navTextItem}>性格タイプ</span>
+        <span className={styles.navTextItem}>マイページ</span>
+        {isLoggedIn ? (
+          <button
+            type="button"
+            className={styles.navLoginButton}
+            onClick={() => setIsLogoutConfirmOpen(true)}
+          >
+            ログアウト
+          </button>
+        ) : (
+          <button
+            type="button"
+            className={styles.navLoginButton}
+            onClick={() => setIsLoginModalOpen(true)}
+          >
+            ログイン
+          </button>
+        )}
+      </nav>
+
       <div className={styles.heroSection}>
         <h1 className={styles.title}>あなたをわんこに例えると？</h1>
       </div>
@@ -47,6 +91,22 @@ function TopScreen({ onStart, disabled }: Props) {
           スタートだワンッ
         </button>
       </div>
+
+      {isLoginModalOpen && (
+        <LoginModal
+          onClose={() => setIsLoginModalOpen(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      )}
+
+      {isLogoutConfirmOpen && (
+        <ConfirmModal
+          message="本当にログアウトしてもいいですか？"
+          confirmLabel="ログアウトする"
+          onConfirm={handleLogout}
+          onCancel={() => setIsLogoutConfirmOpen(false)}
+        />
+      )}
     </div>
   )
 }

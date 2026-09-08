@@ -1,10 +1,76 @@
 .container {
+  position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   background: #ffffff;
   text-align: center;
+}
+
+/* =============================================
+   右上のヘッダーメニュー(ログイン/新規登録/性格タイプ/マイページ)
+   ============================================= */
+
+.headerNav {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 新規登録・性格タイプ・マイページ: 文字のみでまだ機能を持たない項目。
+   本文と同じ配色(#4a2f1c)を薄めた色にして、まだ押せない状態を表現する */
+.navTextItem {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #8a7663;
+  cursor: default;
+}
+
+/* ログインボタン: 質問画面の「はい/いいえ」ボタンと同系統のデザインを
+   ヘッダー用に小さくしたもの */
+.navLoginButton {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 20px;
+  border-radius: 999px;
+  border: 1.5px solid #ff7a3d;
+  background: white;
+  color: #ff7a3d;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.navLoginButton:hover {
+  background: linear-gradient(135deg, #ff9f45, #ff7a3d);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 122, 61, 0.3);
+}
+
+@media (max-width: 640px) {
+  .headerNav {
+    top: 12px;
+    right: 12px;
+    gap: 10px;
+  }
+
+  .navTextItem {
+    font-size: 0.7rem;
+  }
+
+  .navLoginButton {
+    font-size: 0.7rem;
+    padding: 5px 14px;
+  }
 }
 
 /* =============================================
