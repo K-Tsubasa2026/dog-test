@@ -20,6 +20,8 @@ function App() {
   const [answers, setAnswers] = useState<AnswersMap>({})
   const [result, setResult] = useState<DiagnosisResponse | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  // 「テストを受ける」経由で診断画面に来た場合だけ、開始確認を表示する
+  const [showStartConfirm, setShowStartConfirm] = useState(false)
 
   useEffect(() => {
     fetchQuestions()
@@ -28,7 +30,20 @@ function App() {
   }, [])
 
   const handleStart = () => {
+    setShowStartConfirm(false)
     setScreen('question')
+  }
+
+  // 新規登録の「テストを受ける」経由: 診断画面側で開始確認を表示させる
+  const handleStartFromRegister = () => {
+    setShowStartConfirm(true)
+    setScreen('question')
+  }
+
+  // 診断画面の開始確認で「戻る」: 何も選択していない初期状態のTOP画面へ戻る
+  const handleBackToRegisterChoice = () => {
+    setShowStartConfirm(false)
+    setScreen('top')
   }
 
   const handleAnswer = (questionId: number, choiceId: number) => {
@@ -64,7 +79,11 @@ function App() {
 
   if (screen === 'top') {
     return (
-      <TopScreen onStart={handleStart} disabled={questions.length === 0} />
+      <TopScreen
+        onStart={handleStart}
+        onStartFromRegister={handleStartFromRegister}
+        disabled={questions.length === 0}
+      />
     )
   }
 
@@ -76,6 +95,8 @@ function App() {
         onAnswer={handleAnswer}
         onSubmit={handleSubmit}
         isSubmitting={isSubmitting}
+        showStartConfirm={showStartConfirm}
+        onBackToChoice={handleBackToRegisterChoice}
       />
     )
   }

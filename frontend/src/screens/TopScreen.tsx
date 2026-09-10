@@ -3,12 +3,14 @@ import styles from './TopScreen.module.css'
 import buttonStyles from '../styles/Button.module.css'
 import { DOG_PREVIEWS, type DogPreview } from '../utils/dogImages'
 import LoginModal from '../components/LoginModal'
+import RegisterChoiceModal from '../components/RegisterChoiceModal'
 import RegisterModal from '../components/RegisterModal'
 import ConfirmModal from '../components/ConfirmModal'
 import { getToken, saveToken, clearToken } from '../utils/authToken'
 
 interface Props {
   onStart: () => void
+  onStartFromRegister: () => void
   disabled: boolean
 }
 
@@ -17,8 +19,9 @@ function dogImageTransform(dog: DogPreview) {
   return dog.topScale ? `scale(${dog.topScale})` : undefined
 }
 
-function TopScreen({ onStart, disabled }: Props) {
+function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const [isRegisterChoiceOpen, setIsRegisterChoiceOpen] = useState(false)
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
   // 前回ログインしたトークンがブラウザに残っていれば、開いた時点でログイン中扱いにする
@@ -43,13 +46,25 @@ function TopScreen({ onStart, disabled }: Props) {
     setIsLogoutConfirmOpen(false)
   }
 
+  // 「テストを受ける」: フォーク画面を閉じて診断画面へ(開始確認は診断画面側で表示する)
+  const handleChooseTest = () => {
+    setIsRegisterChoiceOpen(false)
+    onStartFromRegister()
+  }
+
+  // 「自分のわんこタイプを知っている」: フォーク画面を閉じて登録フォームへ
+  const handleChooseKnown = () => {
+    setIsRegisterChoiceOpen(false)
+    setIsRegisterModalOpen(true)
+  }
+
   return (
     <div className={styles.container}>
       <nav className={styles.headerNav}>
         <button
           type="button"
           className={styles.navTextButton}
-          onClick={() => setIsRegisterModalOpen(true)}
+          onClick={() => setIsRegisterChoiceOpen(true)}
         >
           新規登録
         </button>
@@ -111,6 +126,14 @@ function TopScreen({ onStart, disabled }: Props) {
         <LoginModal
           onClose={() => setIsLoginModalOpen(false)}
           onLoginSuccess={handleLoginSuccess}
+        />
+      )}
+
+      {isRegisterChoiceOpen && (
+        <RegisterChoiceModal
+          onClose={() => setIsRegisterChoiceOpen(false)}
+          onChooseTest={handleChooseTest}
+          onChooseKnown={handleChooseKnown}
         />
       )}
 
