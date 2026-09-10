@@ -221,11 +221,11 @@ INSERT INTO dog_type (id, code, name, title, description, trivia, image_url, soc
 '/images/samoyed.jpg', 5.0, 4.0, 4.5, 4.0, 2.0, 3.5);
 
 -- ---------------------------------------------------------
--- User（開発用のログイン確認アカウント。新規登録機能実装までの暫定）
+-- User（開発用のログイン確認アカウント）
 -- email: test@example.com / password: password123 (BCryptハッシュ済み)
 -- ---------------------------------------------------------
-INSERT INTO users (id, email, password, created_at) VALUES
-(1, 'test@example.com', '$2a$10$oT9kHVeCGORxFZ4bQ0sOOuwaVqgDgCxkyvJHds7Qo.PGgTOzqKz9G', now());
+INSERT INTO users (id, email, name, password, created_at) VALUES
+(1, 'test@example.com', 'テストユーザー', '$2a$10$oT9kHVeCGORxFZ4bQ0sOOuwaVqgDgCxkyvJHds7Qo.PGgTOzqKz9G', now());
 
 -- ---------------------------------------------------------
 -- IDENTITY列の採番シーケンスを実データに合わせてリセット
