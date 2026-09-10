@@ -8,6 +8,8 @@ import DogTypeChoiceModal from '../components/DogTypeChoiceModal'
 import DogTypeConfirmModal from '../components/DogTypeConfirmModal'
 import RegisterModal from '../components/RegisterModal'
 import ConfirmModal from '../components/ConfirmModal'
+import InfoModal from '../components/InfoModal'
+import Toast from '../components/Toast'
 import { getToken, saveToken, clearToken } from '../utils/authToken'
 import type { DogTypeResponse } from '../types/diagnosis'
 
@@ -30,6 +32,8 @@ function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
   const [selectedDogType, setSelectedDogType] = useState<DogTypeResponse | null>(null)
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
+  const [isAlreadyRegisteredOpen, setIsAlreadyRegisteredOpen] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
   // 前回ログインしたトークンがブラウザに残っていれば、開いた時点でログイン中扱いにする
   const [isLoggedIn, setIsLoggedIn] = useState(() => getToken() !== null)
 
@@ -37,6 +41,16 @@ function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
     saveToken(token)
     setIsLoggedIn(true)
     setIsLoginModalOpen(false)
+    setToastMessage('ログインしました')
+  }
+
+  // ログイン済みの状態で「新規登録」を押した時: 選択肢は出さず、登録済みであることだけ伝える
+  const handleClickRegisterNav = () => {
+    if (isLoggedIn) {
+      setIsAlreadyRegisteredOpen(true)
+    } else {
+      setIsRegisterChoiceOpen(true)
+    }
   }
 
   // 新規登録も成功したらそのままログイン状態にする(バックエンドの仕様に合わせている)
@@ -95,7 +109,7 @@ function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
         <button
           type="button"
           className={styles.navTextButton}
-          onClick={() => setIsRegisterChoiceOpen(true)}
+          onClick={handleClickRegisterNav}
         >
           新規登録
         </button>
@@ -152,6 +166,17 @@ function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
           スタートだワンッ
         </button>
       </div>
+
+      {toastMessage && (
+        <Toast message={toastMessage} onDone={() => setToastMessage(null)} />
+      )}
+
+      {isAlreadyRegisteredOpen && (
+        <InfoModal
+          message="既に登録済みです"
+          onClose={() => setIsAlreadyRegisteredOpen(false)}
+        />
+      )}
 
       {isLoginModalOpen && (
         <LoginModal
