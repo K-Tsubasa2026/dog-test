@@ -31,6 +31,24 @@
   cursor: default;
 }
 
+/* まだ機能を持たない.navTextItemと違い、実際に押せる項目(新規登録)用。
+   見た目は.navTextItemを継承しつつ、ボタンのデフォルト装飾だけ打ち消す */
+.navTextButton {
+  composes: navTextItem;
+  border: none;
+  background: none;
+  padding: 4px 8px;
+  margin: -4px -8px;
+  border-radius: 6px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.navTextButton:hover {
+  background: rgba(255, 122, 61, 0.12);
+}
+
 /* ログインボタン: 質問画面の「はい/いいえ」ボタンと同系統のデザインを
    ヘッダー用に小さくしたもの */
 .navLoginButton {

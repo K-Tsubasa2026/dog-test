@@ -3,6 +3,7 @@ import styles from './TopScreen.module.css'
 import buttonStyles from '../styles/Button.module.css'
 import { DOG_PREVIEWS, type DogPreview } from '../utils/dogImages'
 import LoginModal from '../components/LoginModal'
+import RegisterModal from '../components/RegisterModal'
 import ConfirmModal from '../components/ConfirmModal'
 import { getToken, saveToken, clearToken } from '../utils/authToken'
 
@@ -18,6 +19,7 @@ function dogImageTransform(dog: DogPreview) {
 
 function TopScreen({ onStart, disabled }: Props) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
   // 前回ログインしたトークンがブラウザに残っていれば、開いた時点でログイン中扱いにする
   const [isLoggedIn, setIsLoggedIn] = useState(() => getToken() !== null)
@@ -26,6 +28,13 @@ function TopScreen({ onStart, disabled }: Props) {
     saveToken(token)
     setIsLoggedIn(true)
     setIsLoginModalOpen(false)
+  }
+
+  // 新規登録も成功したらそのままログイン状態にする(バックエンドの仕様に合わせている)
+  const handleRegisterSuccess = (token: string) => {
+    saveToken(token)
+    setIsLoggedIn(true)
+    setIsRegisterModalOpen(false)
   }
 
   const handleLogout = () => {
@@ -37,7 +46,13 @@ function TopScreen({ onStart, disabled }: Props) {
   return (
     <div className={styles.container}>
       <nav className={styles.headerNav}>
-        <span className={styles.navTextItem}>新規登録</span>
+        <button
+          type="button"
+          className={styles.navTextButton}
+          onClick={() => setIsRegisterModalOpen(true)}
+        >
+          新規登録
+        </button>
         <span className={styles.navTextItem}>性格タイプ</span>
         <span className={styles.navTextItem}>マイページ</span>
         {isLoggedIn ? (
@@ -96,6 +111,13 @@ function TopScreen({ onStart, disabled }: Props) {
         <LoginModal
           onClose={() => setIsLoginModalOpen(false)}
           onLoginSuccess={handleLoginSuccess}
+        />
+      )}
+
+      {isRegisterModalOpen && (
+        <RegisterModal
+          onClose={() => setIsRegisterModalOpen(false)}
+          onRegisterSuccess={handleRegisterSuccess}
         />
       )}
 
