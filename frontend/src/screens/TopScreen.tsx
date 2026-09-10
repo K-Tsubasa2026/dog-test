@@ -4,6 +4,7 @@ import buttonStyles from '../styles/Button.module.css'
 import { DOG_PREVIEWS, type DogPreview } from '../utils/dogImages'
 import LoginModal from '../components/LoginModal'
 import RegisterChoiceModal from '../components/RegisterChoiceModal'
+import DogTypeChoiceModal from '../components/DogTypeChoiceModal'
 import RegisterModal from '../components/RegisterModal'
 import ConfirmModal from '../components/ConfirmModal'
 import { getToken, saveToken, clearToken } from '../utils/authToken'
@@ -22,6 +23,7 @@ function dogImageTransform(dog: DogPreview) {
 function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isRegisterChoiceOpen, setIsRegisterChoiceOpen] = useState(false)
+  const [isDogTypeChoiceOpen, setIsDogTypeChoiceOpen] = useState(false)
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
   // 前回ログインしたトークンがブラウザに残っていれば、開いた時点でログイン中扱いにする
@@ -52,9 +54,22 @@ function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
     onStartFromRegister()
   }
 
-  // 「自分のわんこタイプを知っている」: フォーク画面を閉じて登録フォームへ
+  // 「自分のわんこタイプを知っている」: フォーク画面を閉じて犬種選択画面へ
   const handleChooseKnown = () => {
     setIsRegisterChoiceOpen(false)
+    setIsDogTypeChoiceOpen(true)
+  }
+
+  // 犬種選択の「戻る」: フォーク画面(テストを受ける/自分のわんこタイプを知っている)へ戻る
+  const handleDogTypeChoiceBack = () => {
+    setIsDogTypeChoiceOpen(false)
+    setIsRegisterChoiceOpen(true)
+  }
+
+  // 犬種選択の「確定する」: 暫定的にそのまま登録フォームへ
+  // (④確認画面を作ったら、そこを経由するように繋ぎ変える)
+  const handleDogTypeConfirmed = () => {
+    setIsDogTypeChoiceOpen(false)
     setIsRegisterModalOpen(true)
   }
 
@@ -134,6 +149,14 @@ function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
           onClose={() => setIsRegisterChoiceOpen(false)}
           onChooseTest={handleChooseTest}
           onChooseKnown={handleChooseKnown}
+        />
+      )}
+
+      {isDogTypeChoiceOpen && (
+        <DogTypeChoiceModal
+          onClose={() => setIsDogTypeChoiceOpen(false)}
+          onConfirm={handleDogTypeConfirmed}
+          onBack={handleDogTypeChoiceBack}
         />
       )}
 
