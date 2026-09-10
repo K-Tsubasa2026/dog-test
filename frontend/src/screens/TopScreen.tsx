@@ -5,9 +5,11 @@ import { DOG_PREVIEWS, type DogPreview } from '../utils/dogImages'
 import LoginModal from '../components/LoginModal'
 import RegisterChoiceModal from '../components/RegisterChoiceModal'
 import DogTypeChoiceModal from '../components/DogTypeChoiceModal'
+import DogTypeConfirmModal from '../components/DogTypeConfirmModal'
 import RegisterModal from '../components/RegisterModal'
 import ConfirmModal from '../components/ConfirmModal'
 import { getToken, saveToken, clearToken } from '../utils/authToken'
+import type { DogTypeResponse } from '../types/diagnosis'
 
 interface Props {
   onStart: () => void
@@ -24,6 +26,8 @@ function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isRegisterChoiceOpen, setIsRegisterChoiceOpen] = useState(false)
   const [isDogTypeChoiceOpen, setIsDogTypeChoiceOpen] = useState(false)
+  const [isDogTypeConfirmOpen, setIsDogTypeConfirmOpen] = useState(false)
+  const [selectedDogType, setSelectedDogType] = useState<DogTypeResponse | null>(null)
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false)
   // 前回ログインしたトークンがブラウザに残っていれば、開いた時点でログイン中扱いにする
@@ -66,11 +70,23 @@ function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
     setIsRegisterChoiceOpen(true)
   }
 
-  // 犬種選択の「確定する」: 暫定的にそのまま登録フォームへ
-  // (④確認画面を作ったら、そこを経由するように繋ぎ変える)
-  const handleDogTypeConfirmed = () => {
+  // 犬種選択の「確定する」: 選んだ犬種を覚えておき、確認画面へ
+  const handleDogTypeConfirmed = (dogType: DogTypeResponse) => {
+    setSelectedDogType(dogType)
     setIsDogTypeChoiceOpen(false)
+    setIsDogTypeConfirmOpen(true)
+  }
+
+  // 確認画面の「確定する」: 登録フォームへ
+  const handleDogTypeConfirmModalConfirm = () => {
+    setIsDogTypeConfirmOpen(false)
     setIsRegisterModalOpen(true)
+  }
+
+  // 確認画面の「選び直す」: 犬種選択画面へ戻る
+  const handleDogTypeReselect = () => {
+    setIsDogTypeConfirmOpen(false)
+    setIsDogTypeChoiceOpen(true)
   }
 
   return (
@@ -157,6 +173,15 @@ function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
           onClose={() => setIsDogTypeChoiceOpen(false)}
           onConfirm={handleDogTypeConfirmed}
           onBack={handleDogTypeChoiceBack}
+        />
+      )}
+
+      {isDogTypeConfirmOpen && selectedDogType && (
+        <DogTypeConfirmModal
+          dogType={selectedDogType}
+          onClose={() => setIsDogTypeConfirmOpen(false)}
+          onConfirm={handleDogTypeConfirmModalConfirm}
+          onReselect={handleDogTypeReselect}
         />
       )}
 
