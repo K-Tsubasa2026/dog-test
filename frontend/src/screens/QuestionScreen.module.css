@@ -246,6 +246,43 @@
   }
 }
 
+/* =============================================
+   開始確認(「テストを受ける」経由の時だけ表示)
+   ============================================= */
+
+.startConfirm {
+  position: relative;
+  z-index: 1;
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+.startConfirmTitle {
+  font-size: 1.75rem;
+  color: #4a2f1c;
+  margin: 0;
+}
+
+.startConfirmButtons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.startConfirmButtons > button {
+  flex: 1;
+  padding: 14px 8px;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
 .submitRow {
   position: relative;
   z-index: 1;

@@ -28,6 +28,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private String name;
+
     // 平文ではなくBCryptでハッシュ化した文字列を保存する
     @Column(nullable = false)
     private String password;

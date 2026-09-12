@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dogtest.backend.dto.LoginRequest;
 import com.dogtest.backend.dto.LoginResponse;
+import com.dogtest.backend.dto.RegisterRequest;
 import com.dogtest.backend.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
@@ -21,5 +22,10 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) {
         return authService.login(request);
+    }
+
+    @PostMapping("/register")
+    public LoginResponse register(@RequestBody RegisterRequest request) {
+        return authService.register(request);
     }
 }
