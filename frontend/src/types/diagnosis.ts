@@ -36,3 +36,10 @@ export interface DiagnosisResponse {
   dogType: DogTypeResponse
   userScores: UserScoresResponse
 }
+
+export interface DiagnosisHistoryItem {
+  id: number
+  dogType: DogTypeResponse
+  userScores: UserScoresResponse
+  createdAt: string
+}

@@ -7,12 +7,14 @@ import { postRegister } from '../api/auth'
 interface Props {
   onClose: () => void
   onRegisterSuccess: (token: string) => void
+  // 「自分のわんこタイプを知っている」経由の時だけ渡される
+  dogTypeId?: number
 }
 
 // 半角英数字のみ・8文字以上
 const PASSWORD_PATTERN = /^[A-Za-z0-9]{8,}$/
 
-function RegisterModal({ onClose, onRegisterSuccess }: Props) {
+function RegisterModal({ onClose, onRegisterSuccess, dogTypeId }: Props) {
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
@@ -30,7 +32,7 @@ function RegisterModal({ onClose, onRegisterSuccess }: Props) {
 
     setError(null)
     setIsSubmitting(true)
-    postRegister({ email, name, password })
+    postRegister({ email, name, password, dogTypeId })
       .then((response) => onRegisterSuccess(response.token))
       .catch((err: Error) => setError(err.message))
       .finally(() => setIsSubmitting(false))

@@ -5,11 +5,12 @@ import ResultScreen from './screens/ResultScreen'
 import TopScreen from './screens/TopScreen'
 import QuestionScreen from './screens/QuestionScreen'
 import PersonalityTypesScreen from './screens/PersonalityTypesScreen'
+import MyPageScreen from './screens/MyPageScreen'
 import { shuffle } from './utils/shuffle'
 import type { QuestionResponse } from './types/question'
 import type { DiagnosisResponse } from './types/diagnosis'
 
-type Screen = 'top' | 'question' | 'result' | 'personalityTypes'
+type Screen = 'top' | 'question' | 'result' | 'personalityTypes' | 'myPage'
 
 // questionId -> choiceId の辞書。回答済み質問数と現在位置はこの辞書のキー数から導出する
 type AnswersMap = Record<number, number>
@@ -55,6 +56,14 @@ function App() {
     setScreen('top')
   }
 
+  const handleShowMyPage = () => {
+    setScreen('myPage')
+  }
+
+  const handleBackFromMyPage = () => {
+    setScreen('top')
+  }
+
   const handleAnswer = (questionId: number, choiceId: number) => {
     setAnswers((prev) => ({ ...prev, [questionId]: choiceId }))
   }
@@ -92,6 +101,7 @@ function App() {
         onStart={handleStart}
         onStartFromRegister={handleStartFromRegister}
         onShowPersonalityTypes={handleShowPersonalityTypes}
+        onShowMyPage={handleShowMyPage}
         disabled={questions.length === 0}
       />
     )
@@ -99,6 +109,10 @@ function App() {
 
   if (screen === 'personalityTypes') {
     return <PersonalityTypesScreen onBack={handleBackFromPersonalityTypes} />
+  }
+
+  if (screen === 'myPage') {
+    return <MyPageScreen onBack={handleBackFromMyPage} />
   }
 
   if (screen === 'question') {

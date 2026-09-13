@@ -17,6 +17,7 @@ interface Props {
   onStart: () => void
   onStartFromRegister: () => void
   onShowPersonalityTypes: () => void
+  onShowMyPage: () => void
   disabled: boolean
 }
 
@@ -29,6 +30,7 @@ function TopScreen({
   onStart,
   onStartFromRegister,
   onShowPersonalityTypes,
+  onShowMyPage,
   disabled,
 }: Props) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
@@ -56,6 +58,15 @@ function TopScreen({
       setIsAlreadyRegisteredOpen(true)
     } else {
       setIsRegisterChoiceOpen(true)
+    }
+  }
+
+  // 「マイページ」: ログイン中ならマイページへ、未ログインならまずログインしてもらう
+  const handleClickMyPageNav = () => {
+    if (isLoggedIn) {
+      onShowMyPage()
+    } else {
+      setIsLoginModalOpen(true)
     }
   }
 
@@ -126,7 +137,13 @@ function TopScreen({
         >
           性格タイプ
         </button>
-        <span className={styles.navTextItem}>マイページ</span>
+        <button
+          type="button"
+          className={styles.navTextButton}
+          onClick={handleClickMyPageNav}
+        >
+          マイページ
+        </button>
         {isLoggedIn ? (
           <button
             type="button"
@@ -226,6 +243,7 @@ function TopScreen({
         <RegisterModal
           onClose={() => setIsRegisterModalOpen(false)}
           onRegisterSuccess={handleRegisterSuccess}
+          dogTypeId={selectedDogType?.id}
         />
       )}
 
