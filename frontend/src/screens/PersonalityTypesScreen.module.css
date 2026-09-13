@@ -1,0 +1,228 @@
+.container {
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 32px 24px;
+}
+
+.title {
+  font-size: 1.75rem;
+  color: #4a2f1c;
+  margin: 0;
+}
+
+.backButton {
+  position: absolute;
+  left: 24px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 20px;
+  border-radius: 999px;
+  border: 1.5px solid #ff7a3d;
+  background: white;
+  color: #ff7a3d;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.backButton:hover {
+  background: linear-gradient(135deg, #ff9f45, #ff7a3d);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* =============================================
+   グループごとの帯(背景色+透かし文字+犬カード)
+   ============================================= */
+
+.band {
+  position: relative;
+  overflow: hidden;
+  padding: 110px 24px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 最後以外の帯だけ、自分の下部を余分に伸ばして次の帯に重ねる。
+   これにより、不規則な境界線の凹み部分から自分の色がそのまま見え、
+   隙間に白色が出ないようにしている。文字・カードの位置(padding-top)は
+   一切変えていないので、次の帯の文字が色の境目にかぶることもない。
+   凹みは帯自体の高さの最大9%まであるため、帯が縦に長くなっても
+   隙間が出ないよう、余裕を持たせた重なり幅にしている */
+.bandOverlap {
+  padding-bottom: 224px;
+  margin-bottom: -160px;
+}
+
+/* TOP画面の.dogSectionBgと同じ考え方: 帯自体ではなく専用の背景要素に
+   不規則な境界線を持たせ、透かし文字・犬カードと切り取りを分離する */
+.bandBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  clip-path: polygon(
+    0% 9%,
+    12% 3%,
+    27% 8%,
+    41% 2%,
+    58% 7%,
+    74% 1%,
+    88% 6%,
+    100% 2%,
+    100% 100%,
+    0% 100%
+  );
+}
+
+.bandGreen {
+  background: hsl(140, 45%, 90%);
+}
+
+.bandYellow {
+  background: hsl(48, 70%, 88%);
+}
+
+.bandBlue {
+  background: hsl(195, 60%, 90%);
+}
+
+.bandRed {
+  background: hsl(355, 50%, 94%);
+}
+
+/* 文字→画像の順に、重ねずに並べる。position指定をやめた通常の要素にすることで、
+   画面幅が変わっても崩れにくくしている */
+.watermark {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  margin: 0;
+  text-align: center;
+  white-space: nowrap;
+  font-size: clamp(3.2rem, 12vw, 8.7rem);
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+}
+
+.cardRow {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 56px;
+  max-width: 1100px;
+  width: 100%;
+}
+
+/* TOP画面の.dogCardと同じホバー時の浮き上がりアクション */
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 280px;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-12px);
+}
+
+.imageWrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.15));
+}
+
+.name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #4a2f1c;
+  margin: 0 0 4px;
+}
+
+.dogTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #4a2f1c;
+  margin: 0 0 8px;
+}
+
+.description {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #4a2f1c;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+/* =============================================
+   右下に常時表示する「上に戻る」ボタン
+   ============================================= */
+
+.scrollTopButton {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #ff9f45, #ff7a3d);
+  color: white;
+  font-size: 1.3rem;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(255, 122, 61, 0.35);
+  transition: transform 0.15s ease;
+}
+
+.scrollTopButton:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 640px) {
+  .scrollTopButton {
+    right: 16px;
+    bottom: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+
+  .band {
+    padding: 96px 16px 48px;
+  }
+
+  .bandOverlap {
+    padding-bottom: 208px;
+  }
+
+  .card {
+    width: 190px;
+  }
+}
