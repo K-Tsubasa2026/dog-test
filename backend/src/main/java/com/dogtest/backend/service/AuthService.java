@@ -8,9 +8,12 @@ import org.springframework.stereotype.Service;
 import com.dogtest.backend.dto.LoginRequest;
 import com.dogtest.backend.dto.LoginResponse;
 import com.dogtest.backend.dto.RegisterRequest;
+import com.dogtest.backend.entity.DogType;
 import com.dogtest.backend.entity.User;
+import com.dogtest.backend.exception.DogTypeNotFoundException;
 import com.dogtest.backend.exception.DuplicateEmailException;
 import com.dogtest.backend.exception.InvalidLoginException;
+import com.dogtest.backend.repository.DogTypeRepository;
 import com.dogtest.backend.repository.UserRepository;
 import com.dogtest.backend.security.JwtService;
 
@@ -21,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final DogTypeRepository dogTypeRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
@@ -48,6 +52,14 @@ public class AuthService {
         user.setName(request.name());
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setCreatedAt(LocalDateTime.now());
+
+        // 「自分のわんこタイプを知っている」から登録した場合だけ、選んだ犬種を紐付ける
+        if (request.dogTypeId() != null) {
+            DogType dogType = dogTypeRepository.findById(request.dogTypeId())
+                    .orElseThrow(() -> new DogTypeNotFoundException("指定された犬種が見つかりません。"));
+            user.setDogType(dogType);
+        }
+
         userRepository.save(user);
 
         // 登録後は再度ログインさせず、そのまま使えるようにトークンを発行する
