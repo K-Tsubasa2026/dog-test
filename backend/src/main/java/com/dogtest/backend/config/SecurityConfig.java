@@ -8,10 +8,18 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.dogtest.backend.security.JwtAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     // パスワードを暗号化(ハッシュ化)するための部品。
     // 平文の"password123"と、DBに保存されたハッシュ値を比較する時にも使う
@@ -28,10 +36,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 // 既存のCorsConfig(WebMvcConfigurer)の設定をSpring Securityにも適用する
                 .cors(Customizer.withDefaults())
-                // 現時点ではログインAPIを含め、まだ何も保護しない。
-                // 次のステップでログインAPIを追加した後もこの状態を維持し、
-                // 実際にAPIを保護するのは今後の対応にする
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+                // /api/users/以下だけログイン必須にし、それ以外は今まで通り誰でも使える
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/users/**").authenticated()
+                        .anyRequest().permitAll())
+                // JWTを読み取ってログイン中かどうかを判定するフィルターを追加する
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
