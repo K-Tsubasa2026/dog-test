@@ -4,11 +4,12 @@ import { postDiagnosis } from './api/diagnoses'
 import ResultScreen from './screens/ResultScreen'
 import TopScreen from './screens/TopScreen'
 import QuestionScreen from './screens/QuestionScreen'
+import PersonalityTypesScreen from './screens/PersonalityTypesScreen'
 import { shuffle } from './utils/shuffle'
 import type { QuestionResponse } from './types/question'
 import type { DiagnosisResponse } from './types/diagnosis'
 
-type Screen = 'top' | 'question' | 'result'
+type Screen = 'top' | 'question' | 'result' | 'personalityTypes'
 
 // questionId -> choiceId の辞書。回答済み質問数と現在位置はこの辞書のキー数から導出する
 type AnswersMap = Record<number, number>
@@ -43,6 +44,14 @@ function App() {
   // 診断画面の開始確認で「戻る」: 何も選択していない初期状態のTOP画面へ戻る
   const handleBackToRegisterChoice = () => {
     setShowStartConfirm(false)
+    setScreen('top')
+  }
+
+  const handleShowPersonalityTypes = () => {
+    setScreen('personalityTypes')
+  }
+
+  const handleBackFromPersonalityTypes = () => {
     setScreen('top')
   }
 
@@ -82,9 +91,14 @@ function App() {
       <TopScreen
         onStart={handleStart}
         onStartFromRegister={handleStartFromRegister}
+        onShowPersonalityTypes={handleShowPersonalityTypes}
         disabled={questions.length === 0}
       />
     )
+  }
+
+  if (screen === 'personalityTypes') {
+    return <PersonalityTypesScreen onBack={handleBackFromPersonalityTypes} />
   }
 
   if (screen === 'question') {

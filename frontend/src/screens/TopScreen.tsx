@@ -16,6 +16,7 @@ import type { DogTypeResponse } from '../types/diagnosis'
 interface Props {
   onStart: () => void
   onStartFromRegister: () => void
+  onShowPersonalityTypes: () => void
   disabled: boolean
 }
 
@@ -24,7 +25,12 @@ function dogImageTransform(dog: DogPreview) {
   return dog.topScale ? `scale(${dog.topScale})` : undefined
 }
 
-function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
+function TopScreen({
+  onStart,
+  onStartFromRegister,
+  onShowPersonalityTypes,
+  disabled,
+}: Props) {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false)
   const [isRegisterChoiceOpen, setIsRegisterChoiceOpen] = useState(false)
   const [isDogTypeChoiceOpen, setIsDogTypeChoiceOpen] = useState(false)
@@ -113,7 +119,13 @@ function TopScreen({ onStart, onStartFromRegister, disabled }: Props) {
         >
           新規登録
         </button>
-        <span className={styles.navTextItem}>性格タイプ</span>
+        <button
+          type="button"
+          className={styles.navTextButton}
+          onClick={onShowPersonalityTypes}
+        >
+          性格タイプ
+        </button>
         <span className={styles.navTextItem}>マイページ</span>
         {isLoggedIn ? (
           <button
