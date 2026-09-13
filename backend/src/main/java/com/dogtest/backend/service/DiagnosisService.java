@@ -2,6 +2,7 @@ package com.dogtest.backend.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.ToIntFunction;
@@ -10,18 +11,23 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.dogtest.backend.dto.AnswerRequest;
+import com.dogtest.backend.dto.DiagnosisHistoryItemResponse;
 import com.dogtest.backend.dto.DiagnosisRequest;
 import com.dogtest.backend.dto.DiagnosisResponse;
 import com.dogtest.backend.dto.DogTypeResponse;
 import com.dogtest.backend.dto.UserScoresResponse;
 import com.dogtest.backend.entity.Choice;
+import com.dogtest.backend.entity.DiagnosisResult;
 import com.dogtest.backend.entity.DogType;
 import com.dogtest.backend.entity.Question;
+import com.dogtest.backend.entity.User;
 import com.dogtest.backend.exception.InvalidDiagnosisRequestException;
 import com.dogtest.backend.exception.InvalidQuestionSetException;
 import com.dogtest.backend.repository.ChoiceRepository;
+import com.dogtest.backend.repository.DiagnosisResultRepository;
 import com.dogtest.backend.repository.DogTypeRepository;
 import com.dogtest.backend.repository.QuestionRepository;
+import com.dogtest.backend.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,8 +41,12 @@ public class DiagnosisService {
     private final QuestionRepository questionRepository;
     private final ChoiceRepository choiceRepository;
     private final DogTypeRepository dogTypeRepository;
+    private final UserRepository userRepository;
+    private final DiagnosisResultRepository diagnosisResultRepository;
 
-    public DiagnosisResponse diagnose(DiagnosisRequest request) {
+    // userEmailはログイン中の時だけ値が入る(未ログインならnull)。
+    // ログイン中の場合だけ、結果を履歴として保存する
+    public DiagnosisResponse diagnose(DiagnosisRequest request, String userEmail) {
         List<Choice> answeredChoices = resolveAndValidateChoices(request.answers());
 
         RawScores rawScores = aggregateRawScores(answeredChoices);
@@ -45,7 +55,55 @@ public class DiagnosisService {
 
         DogType closestDogType = findClosestDogType(userScores);
 
+        if (userEmail != null) {
+            saveHistory(userEmail, closestDogType, userScores);
+        }
+
         return new DiagnosisResponse(toDogTypeResponse(closestDogType), userScores);
+    }
+
+    private void saveHistory(String userEmail, DogType dogType, UserScoresResponse userScores) {
+        User user = userRepository.findByEmail(userEmail).orElse(null);
+        if (user == null) {
+            return;
+        }
+
+        DiagnosisResult result = new DiagnosisResult();
+        result.setUser(user);
+        result.setDogType(dogType);
+        result.setSociability(userScores.sociability());
+        result.setActivity(userScores.activity());
+        result.setIndependence(userScores.independence());
+        result.setEmotionalExpression(userScores.emotionalExpression());
+        result.setCaution(userScores.caution());
+        result.setCooperativeness(userScores.cooperativeness());
+        result.setCreatedAt(LocalDateTime.now());
+        diagnosisResultRepository.save(result);
+    }
+
+    public List<DiagnosisHistoryItemResponse> getHistory(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalStateException("ユーザーが見つかりません。"));
+
+        return diagnosisResultRepository.findByUser_IdOrderByCreatedAtDesc(user.getId()).stream()
+                .map(this::toHistoryItemResponse)
+                .toList();
+    }
+
+    private DiagnosisHistoryItemResponse toHistoryItemResponse(DiagnosisResult result) {
+        UserScoresResponse userScores = new UserScoresResponse(
+                result.getSociability(),
+                result.getActivity(),
+                result.getIndependence(),
+                result.getEmotionalExpression(),
+                result.getCaution(),
+                result.getCooperativeness());
+
+        return new DiagnosisHistoryItemResponse(
+                result.getId(),
+                toDogTypeResponse(result.getDogType()),
+                userScores,
+                result.getCreatedAt());
     }
 
     private List<Choice> resolveAndValidateChoices(List<AnswerRequest> answers) {
