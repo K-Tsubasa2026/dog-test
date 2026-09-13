@@ -59,7 +59,7 @@ public class DiagnosisService {
             saveHistory(userEmail, closestDogType, userScores);
         }
 
-        return new DiagnosisResponse(toDogTypeResponse(closestDogType), userScores);
+        return new DiagnosisResponse(DogTypeResponse.from(closestDogType), userScores);
     }
 
     private void saveHistory(String userEmail, DogType dogType, UserScoresResponse userScores) {
@@ -101,7 +101,7 @@ public class DiagnosisService {
 
         return new DiagnosisHistoryItemResponse(
                 result.getId(),
-                toDogTypeResponse(result.getDogType()),
+                DogTypeResponse.from(result.getDogType()),
                 userScores,
                 result.getCreatedAt());
     }
@@ -268,23 +268,6 @@ public class DiagnosisService {
                         + dEmotionalExpression * dEmotionalExpression
                         + dCaution * dCaution
                         + dCooperativeness * dCooperativeness);
-    }
-
-    private DogTypeResponse toDogTypeResponse(DogType dogType) {
-        return new DogTypeResponse(
-                dogType.getId(),
-                dogType.getCode(),
-                dogType.getName(),
-                dogType.getTitle(),
-                dogType.getDescription(),
-                dogType.getTrivia(),
-                dogType.getImageUrl(),
-                dogType.getSociability(),
-                dogType.getActivity(),
-                dogType.getIndependence(),
-                dogType.getEmotionalExpression(),
-                dogType.getCaution(),
-                dogType.getCooperativeness());
     }
 
     private record RawScores(

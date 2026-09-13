@@ -2,6 +2,7 @@ package com.dogtest.backend.service;
 
 import org.springframework.stereotype.Service;
 
+import com.dogtest.backend.dto.DogTypeResponse;
 import com.dogtest.backend.dto.MeResponse;
 import com.dogtest.backend.entity.User;
 import com.dogtest.backend.repository.UserRepository;
@@ -20,6 +21,10 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("ユーザーが見つかりません。"));
 
-        return new MeResponse(user.getEmail(), user.getName());
+        DogTypeResponse dogType = user.getDogType() != null
+                ? DogTypeResponse.from(user.getDogType())
+                : null;
+
+        return new MeResponse(user.getEmail(), user.getName(), dogType);
     }
 }
