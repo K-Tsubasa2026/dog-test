@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import styles from './MyPageScreen.module.css'
 import RadarChart from '../components/RadarChart'
+import ScrollToTopButton from '../components/ScrollToTopButton'
 import { fetchMe, fetchMyDiagnoses } from '../api/users'
 import { DOG_IMAGES } from '../utils/dogImages'
 import type { MeResponse } from '../types/user'
@@ -116,6 +117,8 @@ function MyPageScreen({ onBack }: Props) {
           </section>
         </>
       )}
+
+      <ScrollToTopButton />
     </div>
   )
 }

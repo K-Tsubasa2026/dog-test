@@ -10,6 +10,7 @@ import RegisterModal from '../components/RegisterModal'
 import ConfirmModal from '../components/ConfirmModal'
 import InfoModal from '../components/InfoModal'
 import Toast from '../components/Toast'
+import ScrollToTopButton from '../components/ScrollToTopButton'
 import { getToken, saveToken, clearToken } from '../utils/authToken'
 import type { DogTypeResponse } from '../types/diagnosis'
 
@@ -255,6 +256,8 @@ function TopScreen({
           onCancel={() => setIsLogoutConfirmOpen(false)}
         />
       )}
+
+      <ScrollToTopButton />
     </div>
   )
 }

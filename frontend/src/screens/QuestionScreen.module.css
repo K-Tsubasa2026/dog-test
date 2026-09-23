@@ -6,6 +6,32 @@
   overflow-x: hidden;
 }
 
+/* 他の画面と同じ位置・見た目の「TOPに戻る」ボタン */
+.backButton {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 2;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 6px 20px;
+  border-radius: 999px;
+  border: 1.5px solid #ff7a3d;
+  background: white;
+  color: #ff7a3d;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.backButton:hover {
+  background: linear-gradient(135deg, #ff9f45, #ff7a3d);
+  color: white;
+  transform: translateY(-1px);
+}
+
 /* =============================================
    肉球背景アニメーション
    ============================================= */

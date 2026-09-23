@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import styles from './PersonalityTypesScreen.module.css'
+import ScrollToTopButton from '../components/ScrollToTopButton'
 import { fetchDogTypes } from '../api/dogTypes'
 import { DOG_IMAGES } from '../utils/dogImages'
 import type { DogTypeResponse } from '../types/diagnosis'
@@ -131,14 +132,7 @@ function PersonalityTypesScreen({ onBack }: Props) {
         )
       })}
 
-      <button
-        type="button"
-        className={styles.scrollTopButton}
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        aria-label="画面の上部に戻る"
-      >
-        ↑
-      </button>
+      <ScrollToTopButton />
     </div>
   )
 }

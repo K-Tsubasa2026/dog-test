@@ -5,6 +5,7 @@ import RadarChart from '../components/RadarChart'
 import ResultCard from '../components/ResultCard'
 import RegisterModal from '../components/RegisterModal'
 import Toast from '../components/Toast'
+import ScrollToTopButton from '../components/ScrollToTopButton'
 import { downloadElementAsPng } from '../utils/downloadImage'
 import { shareResultToLine } from '../utils/lineShare'
 import { DOG_IMAGES } from '../utils/dogImages'
@@ -157,6 +158,8 @@ function ResultScreen({ result, onRestart }: Props) {
           dogImage={dogImage}
         />
       </div>
+
+      <ScrollToTopButton />
     </div>
   )
 }
