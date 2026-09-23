@@ -64,6 +64,13 @@ function App() {
     setScreen('top')
   }
 
+  // 質問画面の「TOPに戻る」: 回答内容をリセットしてTOP画面へ戻る
+  const handleBackToTopFromQuestion = () => {
+    setShowStartConfirm(false)
+    setAnswers({})
+    setScreen('top')
+  }
+
   const handleAnswer = (questionId: number, choiceId: number) => {
     setAnswers((prev) => ({ ...prev, [questionId]: choiceId }))
   }
@@ -125,6 +132,7 @@ function App() {
         isSubmitting={isSubmitting}
         showStartConfirm={showStartConfirm}
         onBackToChoice={handleBackToRegisterChoice}
+        onBackToTop={handleBackToTopFromQuestion}
       />
     )
   }

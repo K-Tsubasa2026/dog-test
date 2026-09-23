@@ -3,6 +3,7 @@ import styles from './QuestionScreen.module.css'
 import buttonStyles from '../styles/Button.module.css'
 import QuestionItem from '../components/QuestionItem'
 import type { QuestionItemStatus } from '../components/QuestionItem'
+import ScrollToTopButton from '../components/ScrollToTopButton'
 import type { QuestionResponse } from '../types/question'
 
 interface Props {
@@ -14,6 +15,8 @@ interface Props {
   // 「テストを受ける」経由の時だけtrue。「テストを開始する/戻る」を先に表示する
   showStartConfirm: boolean
   onBackToChoice: () => void
+  // 回答内容をリセットしてTOP画面に戻る
+  onBackToTop: () => void
 }
 
 function QuestionScreen({
@@ -24,6 +27,7 @@ function QuestionScreen({
   isSubmitting,
   showStartConfirm,
   onBackToChoice,
+  onBackToTop,
 }: Props) {
   const [hasStarted, setHasStarted] = useState(!showStartConfirm)
   const answeredCount = Object.keys(answers).length
@@ -78,6 +82,10 @@ function QuestionScreen({
 
   return (
     <div className={styles.container}>
+      <button type="button" className={styles.backButton} onClick={onBackToTop}>
+        TOPに戻る
+      </button>
+
       <div className={styles.pawPad} aria-hidden="true">
         <span></span>
         <span></span>
@@ -124,6 +132,8 @@ function QuestionScreen({
           {isSubmitting ? '送信中...' : '診断結果を見る'}
         </button>
       </div>
+
+      <ScrollToTopButton />
     </div>
   )
 }

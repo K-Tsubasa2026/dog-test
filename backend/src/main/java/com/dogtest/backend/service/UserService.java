@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.dogtest.backend.dto.DogTypeResponse;
 import com.dogtest.backend.dto.MeResponse;
 import com.dogtest.backend.entity.User;
+import com.dogtest.backend.exception.UserNotFoundException;
 import com.dogtest.backend.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class UserService {
     // Spring Securityの認証情報として渡してくれたものを使う
     public MeResponse getMe(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalStateException("ユーザーが見つかりません。"));
+                .orElseThrow(() -> new UserNotFoundException("ユーザーが見つかりません。"));
 
         DogTypeResponse dogType = user.getDogType() != null
                 ? DogTypeResponse.from(user.getDogType())

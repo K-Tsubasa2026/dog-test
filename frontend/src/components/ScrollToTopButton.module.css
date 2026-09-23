@@ -1,0 +1,30 @@
+.scrollTopButton {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #ff9f45, #ff7a3d);
+  color: white;
+  font-size: 1.3rem;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(255, 122, 61, 0.35);
+  transition: transform 0.15s ease;
+}
+
+.scrollTopButton:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 640px) {
+  .scrollTopButton {
+    right: 16px;
+    bottom: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+}
