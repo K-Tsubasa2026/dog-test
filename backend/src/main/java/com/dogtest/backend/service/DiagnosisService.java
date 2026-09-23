@@ -23,6 +23,7 @@ import com.dogtest.backend.entity.Question;
 import com.dogtest.backend.entity.User;
 import com.dogtest.backend.exception.InvalidDiagnosisRequestException;
 import com.dogtest.backend.exception.InvalidQuestionSetException;
+import com.dogtest.backend.exception.UserNotFoundException;
 import com.dogtest.backend.repository.ChoiceRepository;
 import com.dogtest.backend.repository.DiagnosisResultRepository;
 import com.dogtest.backend.repository.DogTypeRepository;
@@ -83,7 +84,7 @@ public class DiagnosisService {
 
     public List<DiagnosisHistoryItemResponse> getHistory(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalStateException("ユーザーが見つかりません。"));
+                .orElseThrow(() -> new UserNotFoundException("ユーザーが見つかりません。"));
 
         return diagnosisResultRepository.findByUser_IdOrderByCreatedAtDesc(user.getId()).stream()
                 .map(this::toHistoryItemResponse)

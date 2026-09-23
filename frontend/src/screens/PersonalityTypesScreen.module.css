@@ -85,19 +85,19 @@
 }
 
 .bandGreen {
-  background: hsl(140, 45%, 90%);
+  background: #e7fbbe;
 }
 
 .bandYellow {
-  background: hsl(48, 70%, 88%);
+  background: #d9d7f1;
 }
 
 .bandBlue {
-  background: hsl(195, 60%, 90%);
+  background: #d6e5fa;
 }
 
 .bandRed {
-  background: hsl(355, 50%, 94%);
+  background: #ffcbcb;
 }
 
 /* 文字→画像の順に、重ねずに並べる。position指定をやめた通常の要素にすることで、
