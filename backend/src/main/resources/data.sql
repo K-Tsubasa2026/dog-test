@@ -2,12 +2,16 @@
 -- DogTest 初期データ投入用SQL
 -- アプリ起動のたびに実行される（spring.sql.init.mode=always）。
 -- Question / Choice / DogType は固定マスターデータのため、
--- 起動のたびに全消去してから再投入する方式を採用している。
--- users は開発用のログイン確認アカウントのみ(新規登録機能が
--- まだ無いため)、同様に洗い替える。
+-- コードを直してアプリを再起動するだけでDBにも反映されるよう、
+-- 「同じIDがあれば上書き更新、なければ新規追加」(ON CONFLICT)
+-- という書き方にしている。
+--
+-- 以前はTRUNCATEで全消去してから入れ直す方式だったが、
+-- dog_typeをTRUNCATE CASCADEすると、それを参照しているusers・
+-- diagnosis_result(実際に登録したユーザーの情報や診断履歴)まで
+-- 巻き込んで消えてしまうため、この方式に変更した。
+-- ユーザーのデータはこのファイルでは一切操作しない。
 -- =========================================================
-
-TRUNCATE TABLE choice, question, dog_type, users RESTART IDENTITY CASCADE;
 
 -- ---------------------------------------------------------
 -- Question（30件、6軸 x 5問、display_order = 1〜30）
@@ -42,7 +46,10 @@ INSERT INTO question (id, content, display_order) VALUES
 (27, '自分一人で成功するより、みんなで成功する方が嬉しい', 27),
 (28, '意見が違う時は、相手との落としどころを探す方だ', 28),
 (29, '誰かが困っていると、自分にできることがないか考える', 29),
-(30, 'グループでは、自分の役割を意識して動く方だ', 30);
+(30, 'グループでは、自分の役割を意識して動く方だ', 30)
+ON CONFLICT (id) DO UPDATE SET
+  content = EXCLUDED.content,
+  display_order = EXCLUDED.display_order;
 
 -- ---------------------------------------------------------
 -- Choice（60件、質問ごとに「はい」「いいえ」の2件）
@@ -109,7 +116,16 @@ INSERT INTO choice (id, question_id, content, sociability_delta, activity_delta,
 (57, 29, 'はい', 0, 0, 0, 0, 0, 1),
 (58, 29, 'いいえ', 0, 0, 0, 0, 0, -1),
 (59, 30, 'はい', 0, 0, 0, 0, 0, 1),
-(60, 30, 'いいえ', 0, 0, 0, 0, 0, -1);
+(60, 30, 'いいえ', 0, 0, 0, 0, 0, -1)
+ON CONFLICT (id) DO UPDATE SET
+  question_id = EXCLUDED.question_id,
+  content = EXCLUDED.content,
+  sociability_delta = EXCLUDED.sociability_delta,
+  activity_delta = EXCLUDED.activity_delta,
+  independence_delta = EXCLUDED.independence_delta,
+  emotional_expression_delta = EXCLUDED.emotional_expression_delta,
+  caution_delta = EXCLUDED.caution_delta,
+  cooperativeness_delta = EXCLUDED.cooperativeness_delta;
 
 -- ---------------------------------------------------------
 -- DogType（12件）
@@ -218,21 +234,27 @@ INSERT INTO dog_type (id, code, name, title, description, trivia, image_url, soc
 みんなと仲良くしながらも、自分のやりたいことはしっかり楽しむ自由人です。',
 '本物のサモエドは、口角が上がって見える「サモエドスマイル」で有名です。
 ただそこにいるだけなのに、常に記念写真を撮っているような顔をしています。',
-'/images/samoyed.jpg', 5.0, 4.0, 4.5, 4.0, 2.0, 3.5);
+'/images/samoyed.jpg', 5.0, 4.0, 4.5, 4.0, 2.0, 3.5)
+ON CONFLICT (id) DO UPDATE SET
+  code = EXCLUDED.code,
+  name = EXCLUDED.name,
+  title = EXCLUDED.title,
+  description = EXCLUDED.description,
+  trivia = EXCLUDED.trivia,
+  image_url = EXCLUDED.image_url,
+  sociability = EXCLUDED.sociability,
+  activity = EXCLUDED.activity,
+  independence = EXCLUDED.independence,
+  emotional_expression = EXCLUDED.emotional_expression,
+  caution = EXCLUDED.caution,
+  cooperativeness = EXCLUDED.cooperativeness;
 
 -- ---------------------------------------------------------
--- User（開発用のログイン確認アカウント）
--- email: test@example.com / password: password123 (BCryptハッシュ済み)
--- ---------------------------------------------------------
-INSERT INTO users (id, email, name, password, created_at) VALUES
-(1, 'test@example.com', 'テストユーザー', '$2a$10$oT9kHVeCGORxFZ4bQ0sOOuwaVqgDgCxkyvJHds7Qo.PGgTOzqKz9G', now());
-
--- ---------------------------------------------------------
--- IDENTITY列の採番シーケンスを実データに合わせてリセット
--- 明示的にIDを指定してINSERTしているため、アプリ側からの
--- 新規INSERT時に主キーが衝突しないよう調整する。
+-- IDENTITY列の採番シーケンスを実データに合わせてリセット。
+-- 明示的にIDを指定してINSERT/UPDATEしているため、アプリ側からの
+-- 新規INSERT時に主キーが衝突しないよう調整する
+-- (users・diagnosis_resultは明示IDを使わないため対象外)。
 -- ---------------------------------------------------------
 SELECT setval('question_id_seq', (SELECT MAX(id) FROM question));
 SELECT setval('choice_id_seq', (SELECT MAX(id) FROM choice));
 SELECT setval('dog_type_id_seq', (SELECT MAX(id) FROM dog_type));
-SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
