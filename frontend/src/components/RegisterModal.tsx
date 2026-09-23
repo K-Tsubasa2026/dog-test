@@ -3,16 +3,21 @@ import type { FormEvent } from 'react'
 import styles from './LoginModal.module.css'
 import buttonStyles from '../styles/Button.module.css'
 import { postRegister } from '../api/auth'
+import type { UserScoresResponse } from '../types/diagnosis'
 
 interface Props {
   onClose: () => void
   onRegisterSuccess: (token: string) => void
+  // 「自分のわんこタイプを知っている」「結果を登録する」いずれかの経由の時だけ渡される
+  dogTypeId?: number
+  // 「結果を登録する」経由の時だけ渡される(診断履歴として保存される)
+  userScores?: UserScoresResponse
 }
 
 // 半角英数字のみ・8文字以上
 const PASSWORD_PATTERN = /^[A-Za-z0-9]{8,}$/
 
-function RegisterModal({ onClose, onRegisterSuccess }: Props) {
+function RegisterModal({ onClose, onRegisterSuccess, dogTypeId, userScores }: Props) {
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
@@ -30,7 +35,7 @@ function RegisterModal({ onClose, onRegisterSuccess }: Props) {
 
     setError(null)
     setIsSubmitting(true)
-    postRegister({ email, name, password })
+    postRegister({ email, name, password, dogTypeId, userScores })
       .then((response) => onRegisterSuccess(response.token))
       .catch((err: Error) => setError(err.message))
       .finally(() => setIsSubmitting(false))

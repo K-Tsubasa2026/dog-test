@@ -20,8 +20,10 @@ import com.dogtest.backend.entity.Choice;
 import com.dogtest.backend.entity.DogType;
 import com.dogtest.backend.entity.Question;
 import com.dogtest.backend.repository.ChoiceRepository;
+import com.dogtest.backend.repository.DiagnosisResultRepository;
 import com.dogtest.backend.repository.DogTypeRepository;
 import com.dogtest.backend.repository.QuestionRepository;
+import com.dogtest.backend.repository.UserRepository;
 
 /**
  * 12犬種・6軸の判定分布が「回帰的に」極端な偏りを生んでいないかを検証する。
@@ -68,8 +70,14 @@ class DogTypeDistributionTest {
             return choices.stream().filter(c -> ids.contains(c.getId())).toList();
         });
 
-        DiagnosisService diagnosisService =
-                new DiagnosisService(questionRepository, choiceRepository, dogTypeRepository);
+        // このテストは未ログイン(userEmail=null)の診断だけを検証するため、
+        // 履歴保存に使うリポジトリは呼ばれない前提のモックでよい
+        UserRepository userRepository = mock(UserRepository.class);
+        DiagnosisResultRepository diagnosisResultRepository = mock(DiagnosisResultRepository.class);
+
+        DiagnosisService diagnosisService = new DiagnosisService(
+                questionRepository, choiceRepository, dogTypeRepository,
+                userRepository, diagnosisResultRepository);
 
         // 軸ごとに、raw値8パターンそれぞれの「代表となる1つのbitmask」と「出現回数(重み)」を求める
         List<AxisPattern> axisPatterns = new ArrayList<>();
@@ -99,7 +107,7 @@ class DogTypeDistributionTest {
                 answers.addAll(pattern.answersByPattern.get(idx));
             }
 
-            DiagnosisResponse response = diagnosisService.diagnose(new DiagnosisRequest(answers));
+            DiagnosisResponse response = diagnosisService.diagnose(new DiagnosisRequest(answers), null);
             weightByCode.merge(response.dogType().code(), weight, Double::sum);
             totalWeight += weight;
         }

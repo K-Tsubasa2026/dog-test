@@ -4,9 +4,12 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,4 +40,10 @@ public class User {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    // 新規登録時に「自分のわんこタイプを知っている」を選んだ場合だけ設定される。
+    // 診断を受けずに選んだだけなので、レーダーチャート等の個人結果は別で持たない
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dog_type_id")
+    private DogType dogType;
 }
