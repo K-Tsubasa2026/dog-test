@@ -3,9 +3,12 @@ import styles from './ResultScreen.module.css'
 import buttonStyles from '../styles/Button.module.css'
 import RadarChart from '../components/RadarChart'
 import ResultCard from '../components/ResultCard'
+import RegisterModal from '../components/RegisterModal'
+import Toast from '../components/Toast'
 import { downloadElementAsPng } from '../utils/downloadImage'
 import { shareResultToLine } from '../utils/lineShare'
 import { DOG_IMAGES } from '../utils/dogImages'
+import { getToken, saveToken } from '../utils/authToken'
 import type { DiagnosisResponse } from '../types/diagnosis'
 
 interface Props {
@@ -19,11 +22,23 @@ function ResultScreen({ result, onRestart }: Props) {
   const dogImage = DOG_IMAGES[dogType.code]
   const resultCardRef = useRef<HTMLDivElement>(null)
   const [isSaving, setIsSaving] = useState(false)
+  // 未ログインでこの結果画面に来た場合だけ「結果を登録する」を出す。
+  // ログイン中に診断した結果は、診断APIの時点で既に履歴に保存済みのため不要
+  const [isLoggedIn, setIsLoggedIn] = useState(() => getToken() !== null)
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   useEffect(() => {
     // 結果画面を開いた瞬間(マウント時)は必ずページ先頭から表示する
     window.scrollTo(0, 0)
   }, [])
+
+  const handleRegisterSuccess = (token: string) => {
+    saveToken(token)
+    setIsLoggedIn(true)
+    setIsRegisterModalOpen(false)
+    setToastMessage('登録しました。マイページから確認できます')
+  }
 
   const handleSaveImage = () => {
     if (isSaving || !resultCardRef.current) return
@@ -39,6 +54,10 @@ function ResultScreen({ result, onRestart }: Props) {
 
   return (
     <div className={styles.container}>
+      <button type="button" className={styles.backButton} onClick={onRestart}>
+        TOPに戻る
+      </button>
+
       <div className={styles.layout}>
         <div className={styles.leftCard}>
           <div className={styles.leftCardTop}>
@@ -104,7 +123,29 @@ function ResultScreen({ result, onRestart }: Props) {
         >
           もう一度診断する
         </button>
+        {!isLoggedIn && (
+          <button
+            type="button"
+            className={buttonStyles.outlineButton}
+            onClick={() => setIsRegisterModalOpen(true)}
+          >
+            結果を登録する
+          </button>
+        )}
       </div>
+
+      {toastMessage && (
+        <Toast message={toastMessage} onDone={() => setToastMessage(null)} />
+      )}
+
+      {isRegisterModalOpen && (
+        <RegisterModal
+          onClose={() => setIsRegisterModalOpen(false)}
+          onRegisterSuccess={handleRegisterSuccess}
+          dogTypeId={dogType.id}
+          userScores={userScores}
+        />
+      )}
 
       {/* 画面には表示しない画像保存専用カード。html-to-imageでの
           キャプチャ対象としてoff-screenに常時レンダリングしておく */}
