@@ -90,11 +90,56 @@ CloudFront (バックエンドAPI用リバースプロキシ)  ── EC2 (Sprin
 
 ## ステップ5: CloudFront（バックエンドAPI用リバースプロキシ）
 
-*作業中。完了したらここに追記する。*
-
 - 目的: EC2(http)の前にCloudFrontを置き、利用者からは`https://`でAPIにアクセスできるようにする
 - 独自ドメイン・証明書の購入は行わない（CloudFront自身がhttps対応のドメインを自動発行してくれるため）
 - CloudFront→EC2間の通信はhttpのままでよい（VPC内・インターネット経由だが、AWS内部の通信であり、ブラウザの「混在コンテンツ」判定の対象にはならない）
+
+### ディストリビューション作成時のポイント
+- Origin type: 「Other」を選択（Amazon S3ではない）。CloudFrontのカスタムオリジンは**IPアドレス直接指定不可**のため、EC2に自動で割り当てられるパブリックDNS名（例: `ec2-13-196-168-164.ap-northeast-1.compute.amazonaws.com`）をオリジンドメインに指定する
+- HTTP port: `8080`（EC2側のSpring Bootのポート）
+- プロトコル: HTTPのみ（EC2側がhttpのため）
+- ビューワープロトコルポリシー: Redirect HTTP to HTTPS
+- **キャッシュポリシー: CachingDisabled**（重要。APIレスポンスをキャッシュすると、ユーザーごとに異なる結果が誤って他のユーザーに返ってしまう可能性があるため、必ず無効にする）
+- オリジンリクエストポリシー: AllViewer（Authorizationヘッダーなどをそのままオリジンに転送するため）
+- 許可するHTTPメソッド: GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE（実際に使っているのはGET/POSTのみだが、ワイザード側のデフォルトのままで問題ない）
+- 料金クラス・WAF: フロントエンド用と同様の設定（低コストなクラス、WAF無効）
+
+作成したドメイン名: `https://d3esyxfnskbhhz.cloudfront.net`
+
+### 発生した問題: CORSエラー
+- バックエンドの`CorsConfig.java`が`http://localhost:5173`（ローカル開発用）しか許可しておらず、本番のCloudFrontドメイン(`https://d330uf5f2vl9lz.cloudfront.net`)からのAPIアクセスがブロックされていた
+- 症状としては、静的ファイルの読み込みは成功する（トップページ・質問画面は一瞬表示される）が、実際のAPI通信でエラーになる、という形で現れた
+- 対応: 許可するオリジンをハードコードではなく環境変数`CORS_ALLOWED_ORIGINS`から読み込むように変更（`CorsConfig.java`・`application.properties`）。DBやJWT_SECRETと同じ、環境ごとに値を切り替えられるパターンに統一した
+  - ローカル開発: 未設定時は`http://localhost:5173`にフォールバック
+  - 本番(EC2): `docker run`時に`-e CORS_ALLOWED_ORIGINS=https://d330uf5f2vl9lz.cloudfront.net`を指定
+
+### フロントエンド側の追従
+- `frontend/.env`の`VITE_API_BASE_URL`を、EC2の直接URLではなく**バックエンド用CloudFrontのURL**(`https://d3esyxfnskbhhz.cloudfront.net`)に変更してビルド・S3再アップロード
+
+### EC2側の再デプロイ手順(コード変更を反映する場合の一般手順)
+```bash
+cd ~/dog-test
+git pull
+docker stop dogtest-backend
+docker rm dogtest-backend
+cd ~/dog-test/backend
+docker build -t dogtest-backend .
+docker run -d \
+  --name dogtest-backend \
+  -p 8080:8080 \
+  -e DB_HOST=<RDSのエンドポイント> \
+  -e DB_PORT=5432 \
+  -e POSTGRES_DB=dogtest \
+  -e POSTGRES_USER=dogtest \
+  -e POSTGRES_PASSWORD=<RDSのマスターパスワード> \
+  -e JWT_SECRET=<JWT_SECRET> \
+  -e CORS_ALLOWED_ORIGINS=https://d330uf5f2vl9lz.cloudfront.net \
+  dogtest-backend
+```
+
+## デプロイ完了
+
+2026-09-24、フロントエンド(S3+CloudFront)・バックエンド(EC2+CloudFront)・DB(RDS)すべてがhttps経由で正常に疎通し、ブラウザで診断機能が最後まで動作することを確認済み。
 
 ## コスト管理
 
