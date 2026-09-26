@@ -78,10 +78,17 @@ CloudFront (バックエンドAPI用リバースプロキシ)  ── EC2 (Sprin
 - デフォルトルートオブジェクト: `index.html`（設定しないとトップページで404になる）
 - ドメイン名: 独自ドメインなし。CloudFrontが自動発行する`https://d330uf5f2vl9lz.cloudfront.net`をそのまま使用
 
-### フロントエンドのビルド・アップロード
-- `frontend/.env`の`VITE_API_BASE_URL`を一時的にEC2のURLに変更してビルド（`npm run build`）
-- ビルド後、`.env`はローカル開発用（localhost）に戻す
-- `frontend/dist`フォルダの**中身**（`index.html`・`assets/`）をS3バケットのルートにアップロード（`dist`フォルダごとアップロードすると`index.html`の場所がずれるので注意）
+### フロントエンドのビルド・アップロード（コード変更のたびに毎回行う手順）
+1. `frontend/.env`の`VITE_APP_URL`・`VITE_API_BASE_URL`を一時的に本番用URL（CloudFrontのドメイン）に変更してビルド（`npm run build`）
+2. ビルド後、`.env`はローカル開発用（localhost）に戻す
+3. `frontend/dist`フォルダの**中身**（`index.html`・`assets/`）をS3バケットのルートにアップロード（`dist`フォルダごとアップロードすると`index.html`の場所がずれるので注意）
+4. **CloudFrontで`/index.html`のキャッシュ削除（Invalidation）を作成する**（下記参照。これを忘れると古い画面が配信され続ける）
+
+### 注意点: CloudFrontのキャッシュにより更新が反映されないことがある
+- JS/CSSファイルはビルドのたびにファイル名にハッシュが付く（例: `index-C4Y5DX_R.js`）ため、常に新しいファイルとして扱われる
+- しかし`index.html`はファイル名が変わらないため、CloudFrontが古いキャッシュを配信し続けてしまうことがある（デフォルトのキャッシュ設定では最大24時間程度保持される）
+- そのため、S3再アップロード後は必ず、CloudFrontの「キャッシュ削除」タブ→「キャッシュ削除を作成」→オブジェクトパスに`/index.html`を指定、を行う
+- 費用: 無効化(Invalidation)は月1,000パスまで無料枠があり、通常の更新作業であれば実質無料
 
 ### 発生した問題: 混在コンテンツ(Mixed Content)エラー
 - CloudFront配信のフロントエンドは`https://`だが、APIの接続先（EC2）が`http://`のままだったため、ブラウザが「安全なページから安全でない通信を呼び出す」としてブロック

@@ -4,6 +4,6 @@
 export function shareResultToLine(dogName: string) {
   const shareText = `あなたをわんこに例えると？\nわんこ性格診断を受けてみよう！\n診断結果: ${dogName}タイプでした！`
   const appUrl = import.meta.env.VITE_APP_URL || window.location.origin
-  const shareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(appUrl)}&text=${encodeURIComponent(shareText)}`
+  const shareUrl = `https://line.me/R/msg/text/?${encodeURIComponent(`${shareText}\n${appUrl}`)}`
   window.open(shareUrl, '_blank', 'noopener,noreferrer')
 }

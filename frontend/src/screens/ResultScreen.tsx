@@ -22,6 +22,7 @@ function ResultScreen({ result, onRestart }: Props) {
   const titleParts = dogType.title.split('、')
   const dogImage = DOG_IMAGES[dogType.code]
   const resultCardRef = useRef<HTMLDivElement>(null)
+  const dogImageSlotRef = useRef<HTMLDivElement>(null)
   const [isSaving, setIsSaving] = useState(false)
   // 未ログインでこの結果画面に来た場合だけ「結果を登録する」を出す。
   // ログイン中に診断した結果は、診断APIの時点で既に履歴に保存済みのため不要
@@ -44,8 +45,10 @@ function ResultScreen({ result, onRestart }: Props) {
   const handleSaveImage = () => {
     if (isSaving || !resultCardRef.current) return
     setIsSaving(true)
-    downloadElementAsPng(resultCardRef.current, `dogtest-${dogType.code}.png`).finally(() =>
-      setIsSaving(false),
+    const slot = dogImageSlotRef.current
+    const overlay = dogImage && slot ? { src: dogImage, slot } : undefined
+    downloadElementAsPng(resultCardRef.current, `dogtest-${dogType.code}.png`, overlay).finally(
+      () => setIsSaving(false),
     )
   }
 
@@ -156,6 +159,7 @@ function ResultScreen({ result, onRestart }: Props) {
           dogType={dogType}
           userScores={userScores}
           dogImage={dogImage}
+          dogImageSlotRef={dogImageSlotRef}
         />
       </div>
 
