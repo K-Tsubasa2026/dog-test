@@ -198,6 +198,12 @@
     padding: 32px 16px 48px;
   }
 
+  /* 狭い画面では重ねて配置するとカードの下に隠れるため、通常の配置で一番上に置く */
+  .backButton {
+    position: static;
+    margin-bottom: 20px;
+  }
+
   .leftCardTop {
     padding: 40px 24px 32px;
   }

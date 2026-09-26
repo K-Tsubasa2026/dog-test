@@ -181,8 +181,42 @@
 }
 
 @media (max-width: 640px) {
+  /* 狭い画面ではタイトルと重なるため、ボタンをタイトルの上の行に置く */
+  .header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .backButton {
+    position: static;
+    align-self: flex-start;
+  }
+
+  /* 大きいままだと画面幅に収まらず見切れるため、タイトルと同じサイズにして折り返しも許可する */
+  .watermark {
+    font-size: 1.75rem;
+    white-space: normal;
+  }
+
   .band {
     padding: 96px 16px 48px;
+  }
+
+  /* カードが縦に並んで帯が高くなると、%指定のままではギザギザが深くなり
+     グループ名に重なるため、PCと同じ形のまま深さを最大48pxに固定する */
+  .bandBg {
+    clip-path: polygon(
+      0% 48px,
+      12% 16px,
+      27% 43px,
+      41% 11px,
+      58% 37px,
+      74% 5px,
+      88% 32px,
+      100% 11px,
+      100% 100%,
+      0% 100%
+    );
   }
 
   .bandOverlap {

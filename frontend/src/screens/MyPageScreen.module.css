@@ -176,3 +176,16 @@
   color: #d94f4f;
   padding: 0 24px;
 }
+
+@media (max-width: 640px) {
+  /* 狭い画面ではタイトルと重なるため、ボタンをタイトルの上の行に置く */
+  .header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .backButton {
+    position: static;
+    align-self: flex-start;
+  }
+}
