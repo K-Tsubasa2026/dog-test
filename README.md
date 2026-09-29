@@ -8,7 +8,7 @@
 
 フロントエンドとバックエンドをREST APIでつなぎ、診断ロジックはバックエンド側に持たせています。また、JWTによるログイン機能を実装し、ログイン中のユーザーは診断結果を履歴として保存・確認できます。
 
-開発環境はDocker Composeで構築し、本番環境はAWS（EC2・RDS・S3・CloudFront）にデプロイしています。
+開発環境はDocker Composeで構築し、本番環境はAWS（EC2・S3・CloudFront）にデプロイしています。本番のデータベースは、EC2の中でバックエンドと一緒にDockerで動かしています。
 
 https://d330uf5f2vl9lz.cloudfront.net
 
@@ -50,9 +50,9 @@ https://d330uf5f2vl9lz.cloudfront.net
 ### インフラ
 
 - Docker / Docker Compose（開発環境）
-- AWS EC2（バックエンド）
-- AWS RDS（PostgreSQL）
+- AWS EC2（バックエンド・PostgreSQLをDockerで稼働）
 - AWS S3 + CloudFront（フロントエンド配信）
+- AWS CloudFront（バックエンドAPIのHTTPS化）
 
 ## ディレクトリ構成
 
@@ -210,4 +210,4 @@ http://localhost:8080/
 
 診断結果は娯楽を目的としたものであり、心理学的・科学的な根拠に基づくものではありません。
 
-本番環境はAWSの無料利用枠の範囲で運用しているため、予告なく公開を停止する場合があります。商用利用は想定していません。
+本番環境はAWSの無料プランのクレジットの範囲で運用しているため、予告なく公開を停止する場合があります。商用利用は想定していません。
