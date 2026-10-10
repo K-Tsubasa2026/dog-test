@@ -14,7 +14,9 @@ const AXES: { key: keyof UserScoresResponse; label: string }[] = [
   { key: 'cooperativeness', label: '協調性' },
 ]
 
-const MIN_VALUE = 1
+// 点数は1.0〜5.0だが、チャートの中心は0にする。最低点の1.0でも
+// 中心から1目盛り外側に描かれるため、点数が低い項目が多くても形(面)が残る
+const CENTER_VALUE = 0
 const MAX_VALUE = 5
 // 6角形になった際に上下の頂点のラベル(項目名+数値の2行)がSVG外へ
 // はみ出さないよう、5角形の時よりSIZEを広げ、LABEL_RADIUSをやや控えめにしている
@@ -29,7 +31,7 @@ function angleForIndex(index: number) {
 
 function pointForValue(index: number, value: number, radius = RADIUS) {
   const angle = angleForIndex(index)
-  const ratio = (value - MIN_VALUE) / (MAX_VALUE - MIN_VALUE)
+  const ratio = (value - CENTER_VALUE) / (MAX_VALUE - CENTER_VALUE)
   const r = radius * ratio
   return {
     x: CENTER + r * Math.cos(angle),
@@ -46,7 +48,7 @@ function polygonPoints(values: number[], radius = RADIUS) {
     .join(' ')
 }
 
-// グリッドの目盛り(1.0〜5.0を5段階で描画)
+// グリッドの目盛り(1.0〜5.0の5本。中心が0なので、いちばん内側の線が1.0)
 const GRID_LEVELS = [1, 2, 3, 4, 5]
 
 function RadarChart({ scores }: Props) {
