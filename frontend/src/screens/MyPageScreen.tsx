@@ -73,16 +73,20 @@ function MyPageScreen({ onBack }: Props) {
             </h2>
             {selectedDiagnosis ? (
               <div className={styles.dogTypeFull}>
-                <p className={styles.diagnosedAt}>
-                  {formatDateTime(selectedDiagnosis.createdAt)} の診断結果
-                </p>
-                <img
-                  src={DOG_IMAGES[selectedDiagnosis.dogType.code]}
-                  alt={selectedDiagnosis.dogType.name}
-                  className={styles.dogImage}
-                />
-                <p className={styles.dogName}>{selectedDiagnosis.dogType.name}タイプ</p>
-                <p className={styles.dogTitle}>{selectedDiagnosis.dogType.title}</p>
+                {/* 結果画面と同じく、上(日時〜キャッチコピー)はベージュ、ギザギザの境目から下は白 */}
+                <div className={styles.dogTypeFullTop}>
+                  <div className={styles.dogTypeFullTopBg} aria-hidden="true" />
+                  <p className={styles.diagnosedAt}>
+                    {formatDateTime(selectedDiagnosis.createdAt)} の診断結果
+                  </p>
+                  <img
+                    src={DOG_IMAGES[selectedDiagnosis.dogType.code]}
+                    alt={selectedDiagnosis.dogType.name}
+                    className={styles.dogImage}
+                  />
+                  <p className={styles.dogName}>{selectedDiagnosis.dogType.name}タイプ</p>
+                  <p className={styles.dogTitle}>{selectedDiagnosis.dogType.title}</p>
+                </div>
                 <p className={styles.dogDescription}>
                   {selectedDiagnosis.dogType.description}
                 </p>
