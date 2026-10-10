@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import styles from './ResultScreen.module.css'
 import buttonStyles from '../styles/Button.module.css'
-import RadarChart from '../components/RadarChart'
 import ResultCard from '../components/ResultCard'
+import ResultDetail from '../components/ResultDetail'
 import RegisterModal from '../components/RegisterModal'
 import Toast from '../components/Toast'
 import ScrollToTopButton from '../components/ScrollToTopButton'
@@ -19,7 +19,6 @@ interface Props {
 
 function ResultScreen({ result, onRestart }: Props) {
   const { dogType, userScores } = result
-  const titleParts = dogType.title.split('、')
   const dogImage = DOG_IMAGES[dogType.code]
   const resultCardRef = useRef<HTMLDivElement>(null)
   const dogImageSlotRef = useRef<HTMLDivElement>(null)
@@ -62,47 +61,7 @@ function ResultScreen({ result, onRestart }: Props) {
         TOPに戻る
       </button>
 
-      <div className={styles.layout}>
-        <div className={styles.leftCard}>
-          <div className={styles.leftCardTop}>
-            <div className={styles.leftCardTopBg} aria-hidden="true" />
-            <p className={styles.dogName}>{dogType.name}タイプ</p>
-            <p className={styles.dogTitle}>
-              {titleParts.length > 1 ? (
-                <>
-                  {titleParts[0]}、
-                  <br />
-                  {titleParts.slice(1).join('、')}
-                </>
-              ) : (
-                dogType.title
-              )}
-            </p>
-            {dogImage && (
-              <img
-                src={dogImage}
-                alt={dogType.name}
-                className={styles.dogImage}
-              />
-            )}
-          </div>
-
-          <div className={styles.leftCardBottom}>
-            <p className={styles.description}>{dogType.description}</p>
-          </div>
-        </div>
-
-        <div className={styles.rightColumn}>
-          <div className={styles.chartCard}>
-            <RadarChart scores={userScores} />
-          </div>
-
-          <div className={styles.triviaCard}>
-            <p className={styles.triviaHeading}>ちなみに...</p>
-            <p className={styles.triviaText}>{dogType.trivia}</p>
-          </div>
-        </div>
-      </div>
+      <ResultDetail dogType={dogType} userScores={userScores} fitViewport />
 
       <div className={styles.actions}>
         <button

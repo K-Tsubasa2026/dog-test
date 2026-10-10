@@ -1,6 +1,7 @@
 package com.dogtest.backend.service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -89,7 +90,7 @@ public class AuthService {
         result.setEmotionalExpression(userScores.emotionalExpression());
         result.setCaution(userScores.caution());
         result.setCooperativeness(userScores.cooperativeness());
-        result.setCreatedAt(LocalDateTime.now());
+        result.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
         diagnosisResultRepository.save(result);
     }
 }

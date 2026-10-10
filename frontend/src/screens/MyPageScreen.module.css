@@ -67,67 +67,20 @@
 }
 
 /* =============================================
-   自分のわんこタイプ
+   自分のわんこタイプ(中身は共通部品のResultDetail)
    ============================================= */
 
-.dogTypeFull,
-.dogTypeSimple {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  background: #fbe8d6;
-  border-radius: 24px;
-  padding: 32px 24px;
+/* 結果画面と同じ2列のカードが入るよう、この欄だけ横幅を広げる */
+.sectionWide {
+  max-width: 1288px;
 }
 
-.dogImage {
-  width: 160px;
-  height: 160px;
-  object-fit: contain;
-  margin-bottom: 12px;
-  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.15));
-}
-
-.dogName {
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: #4a2f1c;
-  margin: 0 0 4px;
-}
-
-.dogTitle {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #ff7a3d;
-  margin: 0 0 12px;
-}
-
-.dogDescription {
+/* 見出しの横に表示する、表示している診断結果の日時 */
+.diagnosedAt {
+  margin-left: 16px;
   font-size: 0.85rem;
-  line-height: 1.7;
-  color: #4a2f1c;
-  white-space: pre-wrap;
-  margin: 0 0 16px;
-}
-
-.chartWrap {
-  margin: 8px 0 16px;
-}
-
-.triviaHeading {
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: #4a2f1c;
-  margin: 0 0 4px;
-}
-
-.triviaText {
-  font-size: 0.85rem;
-  line-height: 1.7;
-  color: #4a2f1c;
-  white-space: pre-wrap;
-  margin: 0;
+  font-weight: 400;
+  color: #8a7663;
 }
 
 /* =============================================
@@ -143,13 +96,47 @@
   gap: 12px;
 }
 
+/* 選んでいない履歴: 質問画面の回答済みボタン(「はい」「いいえ」)と同じグレー */
 .historyItem {
   display: flex;
   align-items: center;
   gap: 16px;
+  width: 100%;
   padding: 12px 16px;
   border-radius: 16px;
+  border: 2px solid transparent;
+  background: linear-gradient(135deg, #d8cabf, #c2b6a9);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.historyItem:hover {
+  border-color: #ffb27d;
+  transform: translateY(-1px);
+}
+
+.historyItem .historyDogName,
+.historyItem .historyDate {
+  color: white;
+}
+
+/* 今、上の欄に表示している診断結果: 元の色に戻してオレンジの枠を付ける */
+.historyItemActive,
+.historyItemActive:hover {
   background: #fbe8d6;
+  border-color: #ff7a3d;
+}
+
+.historyItemActive .historyDogName {
+  color: #4a2f1c;
+}
+
+.historyItemActive .historyDate {
+  color: #8a7663;
 }
 
 .historyImage {
