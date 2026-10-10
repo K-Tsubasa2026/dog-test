@@ -166,6 +166,16 @@ function TopScreen({
 
       <div className={styles.heroSection}>
         <h1 className={styles.title}>あなたをわんこに例えると？</h1>
+        {/* 犬の一覧が縦に長くなる画面(PC以外)では、下のボタンまでスクロールしなくても
+            始められるよう、タイトルの下にもスタートボタンを置く */}
+        <button
+          type="button"
+          className={`${buttonStyles.primaryButton} ${styles.heroStartButton}`}
+          onClick={onStart}
+          disabled={disabled}
+        >
+          スタートだワンッ
+        </button>
       </div>
 
       <div className={styles.dogSection}>
