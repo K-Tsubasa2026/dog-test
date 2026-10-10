@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import styles from './MyPageScreen.module.css'
-import RadarChart from '../components/RadarChart'
+import ResultDetail from '../components/ResultDetail'
 import ScrollToTopButton from '../components/ScrollToTopButton'
 import { fetchMe, fetchMyDiagnoses } from '../api/users'
 import { DOG_IMAGES } from '../utils/dogImages'
@@ -67,46 +67,27 @@ function MyPageScreen({ onBack }: Props) {
             <p className={styles.infoLine}>メールアドレス：{me.email}</p>
           </section>
 
-          <section className={styles.section} ref={dogTypeSectionRef}>
+          {/* 結果のカードは結果画面と同じ2列で表示するため、この欄だけ幅を広げる */}
+          <section
+            className={`${styles.section} ${styles.sectionWide}`}
+            ref={dogTypeSectionRef}
+          >
             <h2 className={styles.sectionTitle}>
               {isShowingLatest ? '自分のわんこタイプ' : '過去の診断結果'}
+              {selectedDiagnosis && (
+                <span className={styles.diagnosedAt}>
+                  {formatDateTime(selectedDiagnosis.createdAt)} の診断結果
+                </span>
+              )}
             </h2>
             {selectedDiagnosis ? (
-              <div className={styles.dogTypeFull}>
-                {/* 結果画面と同じく、上(日時〜キャッチコピー)はベージュ、ギザギザの境目から下は白 */}
-                <div className={styles.dogTypeFullTop}>
-                  <div className={styles.dogTypeFullTopBg} aria-hidden="true" />
-                  <p className={styles.diagnosedAt}>
-                    {formatDateTime(selectedDiagnosis.createdAt)} の診断結果
-                  </p>
-                  <img
-                    src={DOG_IMAGES[selectedDiagnosis.dogType.code]}
-                    alt={selectedDiagnosis.dogType.name}
-                    className={styles.dogImage}
-                  />
-                  <p className={styles.dogName}>{selectedDiagnosis.dogType.name}タイプ</p>
-                  <p className={styles.dogTitle}>{selectedDiagnosis.dogType.title}</p>
-                </div>
-                <p className={styles.dogDescription}>
-                  {selectedDiagnosis.dogType.description}
-                </p>
-                <div className={styles.chartWrap}>
-                  <RadarChart scores={selectedDiagnosis.userScores} />
-                </div>
-                <p className={styles.triviaHeading}>ちなみに...</p>
-                <p className={styles.triviaText}>{selectedDiagnosis.dogType.trivia}</p>
-              </div>
+              <ResultDetail
+                dogType={selectedDiagnosis.dogType}
+                userScores={selectedDiagnosis.userScores}
+              />
             ) : me.dogType ? (
-              <div className={styles.dogTypeSimple}>
-                <img
-                  src={DOG_IMAGES[me.dogType.code]}
-                  alt={me.dogType.name}
-                  className={styles.dogImage}
-                />
-                <p className={styles.dogName}>{me.dogType.name}タイプ</p>
-                <p className={styles.dogTitle}>{me.dogType.title}</p>
-                <p className={styles.dogDescription}>{me.dogType.description}</p>
-              </div>
+              // 「自分のわんこタイプを知っている」で登録し、まだ診断していない場合
+              <ResultDetail dogType={me.dogType} userScores={null} />
             ) : (
               <p className={styles.emptyText}>診断履歴がありません</p>
             )}
