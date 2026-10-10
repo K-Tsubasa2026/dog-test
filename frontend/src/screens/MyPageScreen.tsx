@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styles from './MyPageScreen.module.css'
 import RadarChart from '../components/RadarChart'
 import ScrollToTopButton from '../components/ScrollToTopButton'
@@ -11,15 +11,21 @@ interface Props {
   onBack: () => void
 }
 
-function formatDate(iso: string) {
+// バックエンドはUTCの時刻(末尾にZ付き)で返すため、new Date()でブラウザの時刻(日本時間)に変換される
+function formatDateTime(iso: string) {
   const date = new Date(iso)
-  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${hours}:${minutes}`
 }
 
 function MyPageScreen({ onBack }: Props) {
   const [me, setMe] = useState<MeResponse | null>(null)
   const [diagnoses, setDiagnoses] = useState<DiagnosisHistoryItem[]>([])
   const [error, setError] = useState<string | null>(null)
+  // 診断履歴で選んだ結果のid。未選択(null)の間は一番新しい診断結果を表示する
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const dogTypeSectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -31,8 +37,16 @@ function MyPageScreen({ onBack }: Props) {
       .catch((err: Error) => setError(err.message))
   }, [])
 
-  // 一番新しい診断結果があれば、それを「自分のわんこタイプ」として本人のレーダーチャート付きで表示する
+  // 診断履歴で選んだ結果(未選択なら一番新しい結果)を、本人のレーダーチャート付きで表示する
   const latestDiagnosis = diagnoses[0]
+  const selectedDiagnosis = diagnoses.find((item) => item.id === selectedId) ?? latestDiagnosis
+  const isShowingLatest = selectedDiagnosis === latestDiagnosis
+
+  // 履歴を選んだら、結果が表示される「自分のわんこタイプ」の位置までスクロールする
+  const handleSelectHistory = (id: number) => {
+    setSelectedId(id)
+    dogTypeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
     <div className={styles.container}>
@@ -53,25 +67,30 @@ function MyPageScreen({ onBack }: Props) {
             <p className={styles.infoLine}>メールアドレス：{me.email}</p>
           </section>
 
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>自分のわんこタイプ</h2>
-            {latestDiagnosis ? (
+          <section className={styles.section} ref={dogTypeSectionRef}>
+            <h2 className={styles.sectionTitle}>
+              {isShowingLatest ? '自分のわんこタイプ' : '過去の診断結果'}
+            </h2>
+            {selectedDiagnosis ? (
               <div className={styles.dogTypeFull}>
+                <p className={styles.diagnosedAt}>
+                  {formatDateTime(selectedDiagnosis.createdAt)} の診断結果
+                </p>
                 <img
-                  src={DOG_IMAGES[latestDiagnosis.dogType.code]}
-                  alt={latestDiagnosis.dogType.name}
+                  src={DOG_IMAGES[selectedDiagnosis.dogType.code]}
+                  alt={selectedDiagnosis.dogType.name}
                   className={styles.dogImage}
                 />
-                <p className={styles.dogName}>{latestDiagnosis.dogType.name}タイプ</p>
-                <p className={styles.dogTitle}>{latestDiagnosis.dogType.title}</p>
+                <p className={styles.dogName}>{selectedDiagnosis.dogType.name}タイプ</p>
+                <p className={styles.dogTitle}>{selectedDiagnosis.dogType.title}</p>
                 <p className={styles.dogDescription}>
-                  {latestDiagnosis.dogType.description}
+                  {selectedDiagnosis.dogType.description}
                 </p>
                 <div className={styles.chartWrap}>
-                  <RadarChart scores={latestDiagnosis.userScores} />
+                  <RadarChart scores={selectedDiagnosis.userScores} />
                 </div>
                 <p className={styles.triviaHeading}>ちなみに...</p>
-                <p className={styles.triviaText}>{latestDiagnosis.dogType.trivia}</p>
+                <p className={styles.triviaText}>{selectedDiagnosis.dogType.trivia}</p>
               </div>
             ) : me.dogType ? (
               <div className={styles.dogTypeSimple}>
@@ -94,20 +113,31 @@ function MyPageScreen({ onBack }: Props) {
             {diagnoses.length > 0 ? (
               <ul className={styles.historyList}>
                 {diagnoses.map((item) => (
-                  <li key={item.id} className={styles.historyItem}>
-                    <img
-                      src={DOG_IMAGES[item.dogType.code]}
-                      alt={item.dogType.name}
-                      className={styles.historyImage}
-                    />
-                    <div>
-                      <p className={styles.historyDogName}>
-                        {item.dogType.name}タイプ
-                      </p>
-                      <p className={styles.historyDate}>
-                        {formatDate(item.createdAt)}
-                      </p>
-                    </div>
+                  <li key={item.id}>
+                    <button
+                      type="button"
+                      className={
+                        item.id === selectedDiagnosis?.id
+                          ? `${styles.historyItem} ${styles.historyItemActive}`
+                          : styles.historyItem
+                      }
+                      aria-pressed={item.id === selectedDiagnosis?.id}
+                      onClick={() => handleSelectHistory(item.id)}
+                    >
+                      <img
+                        src={DOG_IMAGES[item.dogType.code]}
+                        alt={item.dogType.name}
+                        className={styles.historyImage}
+                      />
+                      <div>
+                        <p className={styles.historyDogName}>
+                          {item.dogType.name}タイプ
+                        </p>
+                        <p className={styles.historyDate}>
+                          {formatDateTime(item.createdAt)}
+                        </p>
+                      </div>
+                    </button>
                   </li>
                 ))}
               </ul>

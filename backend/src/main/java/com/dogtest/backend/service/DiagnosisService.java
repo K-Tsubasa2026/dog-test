@@ -3,6 +3,7 @@ package com.dogtest.backend.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 import java.util.function.ToIntFunction;
@@ -78,7 +79,8 @@ public class DiagnosisService {
         result.setEmotionalExpression(userScores.emotionalExpression());
         result.setCaution(userScores.caution());
         result.setCooperativeness(userScores.cooperativeness());
-        result.setCreatedAt(LocalDateTime.now());
+        // サーバーのタイムゾーン設定に関係なく、診断日時は常にUTCで保存する
+        result.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
         diagnosisResultRepository.save(result);
     }
 
@@ -104,7 +106,7 @@ public class DiagnosisService {
                 result.getId(),
                 DogTypeResponse.from(result.getDogType()),
                 userScores,
-                result.getCreatedAt());
+                result.getCreatedAt().atOffset(ZoneOffset.UTC));
     }
 
     private List<Choice> resolveAndValidateChoices(List<AnswerRequest> answers) {
